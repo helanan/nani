@@ -399,12 +399,14 @@
   <script>
     // ── FREE TIME TRACKER ──
     // Today's busy blocks (start, end) in minutes from midnight
+    // Only scheduled appointments/meetings — not open-ended personal events
     const busyBlocks = [
       [9*60,    9*60+30],   // Emails 9:00–9:30
       [11*60,   11*60+30],  // EDW standup 11:00–11:30
       [11*60+30,12*60],     // EDW ingestion 11:30–12:00
       [12*60,   13*60],     // Lunch 12:00–1:00
-      [13*60,   23*60+59],  // Birthday party + rest of day from 1pm
+      [16*60+30,17*60],     // DAG Fixes 4:30–5:00
+      [16*60+45,18*60+45],  // GitHub Copilot SpecKit 4:45–6:45
     ];
 
     const DAY_START = 7 * 60;   // 7:00 AM
