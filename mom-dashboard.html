@@ -22,6 +22,9 @@
     .card-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: #5c3d2e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
     .card-title .icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
 
+    /* NOTICE BANNER */
+    .notice-banner { background: #fff8e8; border: 1px solid #f0d890; border-radius: 10px; padding: 8px 14px; font-size: 0.75rem; color: #8a6a20; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
     /* ALL DAY BANNERS */
     .allday-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
     .allday-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; }
@@ -134,7 +137,7 @@
       <div class="subtitle">Here's what's on your plate today</div>
     </div>
     <div class="date-badge">
-      <div class="day">15</div>
+      <div class="day">16</div>
       <div class="month-year">April 2026</div>
     </div>
   </div>
@@ -145,11 +148,7 @@
     <div class="card col-full">
       <div class="card-title"><div class="icon" style="background:#fde8d8;">📅</div>Today's Schedule</div>
 
-      <div class="allday-row">
-        <div class="allday-pill allday-work">💼 Code Complete Day — notify team, post scripts to Slack folder by EOD</div>
-        <div class="allday-pill allday-personal">🎨 What's Your Passion Wednesday (Inclusion Spirit Week)</div>
-        <div class="allday-pill allday-personal">⚾ Wilmington Blue Rocks Ticket Deadline</div>
-      </div>
+      <div class="notice-banner">⚠️ Google Calendar is refreshing — showing your known recurring meetings. <a href="https://calendar.google.com" target="_blank" style="color:#8a6a20;font-weight:600;">Open Calendar</a> for anything additional today.</div>
 
       <div class="schedule-list">
         <div class="schedule-item cal-work">
@@ -169,28 +168,8 @@
         </div>
         <div class="schedule-item cal-work">
           <div class="time-col"><div class="time-start">12:00 PM</div><div class="time-end">1:00 PM</div></div>
-          <div class="line-col"><div class="dot"></div><div class="line"></div></div>
-          <div class="event-col"><div class="event-name">Lunch 🍽️</div><span class="event-tag tag-work">Work</span></div>
-        </div>
-        <div class="schedule-item cal-personal">
-          <div class="time-col"><div class="time-start">2:00 PM</div><div class="time-end">3:00 PM</div></div>
-          <div class="line-col"><div class="dot"></div><div class="line"></div></div>
-          <div class="event-col"><div class="event-name">Data Automation on dbt with VaultSpeed & AutomateDV</div><span class="event-tag tag-personal">Online Event</span></div>
-        </div>
-        <div class="schedule-item cal-work">
-          <div class="time-col"><div class="time-start">4:30 PM</div><div class="time-end">5:00 PM</div></div>
-          <div class="line-col"><div class="dot"></div><div class="line"></div></div>
-          <div class="event-col"><div class="event-name">DAG Fixes and Documentation</div><span class="event-tag tag-work">Work</span></div>
-        </div>
-        <div class="schedule-item cal-personal">
-          <div class="time-col"><div class="time-start">4:30 PM</div><div class="time-end">5:30 PM</div></div>
-          <div class="line-col"><div class="dot"></div><div class="line"></div></div>
-          <div class="event-col"><div class="event-name">International Celebration of Spring 🌸</div><span class="event-tag tag-personal">Personal</span></div>
-        </div>
-        <div class="schedule-item cal-personal">
-          <div class="time-col"><div class="time-start">6:00 PM</div><div class="time-end">9:00 PM</div></div>
           <div class="line-col"><div class="dot"></div></div>
-          <div class="event-col"><div class="event-name">Rita's Water Ice Spirit Night 🍧</div><div style="font-size:0.7rem;color:#9e7b6b;margin-top:3px;">323 E Gay St, West Chester</div><span class="event-tag tag-personal">Personal</span></div>
+          <div class="event-col"><div class="event-name">Lunch 🍽️</div><span class="event-tag tag-work">Work</span></div>
         </div>
       </div>
     </div>
@@ -208,27 +187,27 @@
         <div class="countdown-item">
           <div style="font-size:1.2rem">🎂</div>
           <div class="countdown-info"><div class="countdown-name">Sadie's 5th Birthday Party!</div><div class="countdown-date">Apr 26 · Philadelphia Ethical Society</div></div>
-          <div class="countdown-days"><div class="days-number">11</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">10</div><div class="days-label">days</div></div>
         </div>
         <div class="countdown-item">
           <div style="font-size:1.2rem">🎂</div>
           <div class="countdown-info"><div class="countdown-name">Dad's Birthday</div><div class="countdown-date">May 2</div></div>
-          <div class="countdown-days"><div class="days-number">17</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">16</div><div class="days-label">days</div></div>
         </div>
         <div class="countdown-item">
           <div style="font-size:1.2rem">🌳</div>
           <div class="countdown-info"><div class="countdown-name">Mason's Birthday – Treehouse World</div><div class="countdown-date">May 3 · 1:30 PM</div></div>
-          <div class="countdown-days"><div class="days-number">18</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">17</div><div class="days-label">days</div></div>
         </div>
         <div class="countdown-item">
           <div style="font-size:1.2rem">🎈</div>
           <div class="countdown-info"><div class="countdown-name">Oliver's 3rd Birthday</div><div class="countdown-date">May 3 · Imagination Street, Exton</div></div>
-          <div class="countdown-days"><div class="days-number">18</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">17</div><div class="days-label">days</div></div>
         </div>
         <div class="countdown-item">
           <div style="font-size:1.2rem">🎂</div>
           <div class="countdown-info"><div class="countdown-name">Ryan's Birthday Dinner</div><div class="countdown-date">May 16</div></div>
-          <div class="countdown-days"><div class="days-number">31</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">30</div><div class="days-label">days</div></div>
         </div>
       </div>
     </div>
@@ -243,7 +222,7 @@
             <div class="gift-name">Sadie's 5th Birthday</div>
             <div class="gift-dates">Party: Apr 26 · <span class="gift-due soon">Buy by Apr 23</span></div>
           </div>
-          <div class="gift-days"><div class="num">8</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">7</div><div class="lbl">days left</div></div>
         </div>
         <div class="gift-item">
           <div style="font-size:1.3rem">🎁</div>
@@ -251,7 +230,7 @@
             <div class="gift-name">Dad's Birthday</div>
             <div class="gift-dates">May 2 · <span class="gift-due ok">Buy by Apr 29</span></div>
           </div>
-          <div class="gift-days"><div class="num">14</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">13</div><div class="lbl">days left</div></div>
         </div>
         <div class="gift-item">
           <div style="font-size:1.3rem">🎁</div>
@@ -259,7 +238,7 @@
             <div class="gift-name">Oliver's 3rd Birthday</div>
             <div class="gift-dates">Party: May 3 · <span class="gift-due ok">Buy by Apr 30</span></div>
           </div>
-          <div class="gift-days"><div class="num">15</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">14</div><div class="lbl">days left</div></div>
         </div>
         <div class="gift-item">
           <div style="font-size:1.3rem">🎁</div>
@@ -267,7 +246,7 @@
             <div class="gift-name">Mason's Birthday</div>
             <div class="gift-dates">May 4 · <span class="gift-due ok">Buy by May 1</span></div>
           </div>
-          <div class="gift-days"><div class="num">16</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">15</div><div class="lbl">days left</div></div>
         </div>
         <div class="gift-item">
           <div style="font-size:1.3rem">🎁</div>
@@ -275,7 +254,7 @@
             <div class="gift-name">Ryan's Birthday</div>
             <div class="gift-dates">May 19 · <span class="gift-due ok">Buy by May 16</span></div>
           </div>
-          <div class="gift-days"><div class="num">31</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">30</div><div class="lbl">days left</div></div>
         </div>
       </div>
     </div>
@@ -296,23 +275,38 @@
             <div class="tasks-section-label label-overdue">Overdue</div>
             <div class="task-item overdue-task" data-task="send-computer">
               <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Send Old Work Computer Back</div><div class="task-meta overdue-meta">Was due Apr 10</div></div>
+              <div class="task-text"><div class="task-name">Send Old Work Computer Back</div><div class="task-meta overdue-meta">Past due</div></div>
+            </div>
+            <div class="task-item overdue-task" data-task="cvs-picture">
+              <div class="task-check"></div>
+              <div class="task-text"><div class="task-name">Pick Up CVS Picture</div><div class="task-meta overdue-meta">Past due</div></div>
             </div>
             <div class="task-item overdue-task" data-task="christmas-deco">
               <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Put Away Christmas Decorations</div><div class="task-meta overdue-meta">Was due Apr 10</div></div>
+              <div class="task-text"><div class="task-name">Put Away Christmas Decorations</div><div class="task-meta overdue-meta">Past due</div></div>
             </div>
             <div class="task-item overdue-task" data-task="mason-ent">
               <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Mason ENT Appt</div><div class="task-meta overdue-meta">Was due Jun 28, 2025</div></div>
+              <div class="task-text"><div class="task-name">Mason ENT Appt</div><div class="task-meta overdue-meta">Past due</div></div>
             </div>
             <div class="task-item overdue-task" data-task="fidelity">
               <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Fidelity Account</div><div class="task-meta overdue-meta">Was due Oct 27, 2025</div></div>
+              <div class="task-text"><div class="task-name">Fidelity Account</div><div class="task-meta overdue-meta">Past due</div></div>
             </div>
             <div class="task-item overdue-task" data-task="meet-hr">
               <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Meet with HR</div><div class="task-meta overdue-meta">Was due Oct 28, 2025</div></div>
+              <div class="task-text"><div class="task-name">Meet with HR</div><div class="task-meta overdue-meta">Past due</div></div>
+            </div>
+          </div>
+          <div class="tasks-section">
+            <div class="tasks-section-label label-todo">Daily</div>
+            <div class="task-item todo-task" data-task="cardio">
+              <div class="task-check"></div>
+              <div class="task-text"><div class="task-name">Cardio – 30 Minutes</div></div>
+            </div>
+            <div class="task-item todo-task" data-task="core">
+              <div class="task-check"></div>
+              <div class="task-text"><div class="task-name">Core – 25 Minutes</div></div>
             </div>
           </div>
         </div>
@@ -339,10 +333,6 @@
               <div class="task-check"></div>
               <div class="task-text"><div class="task-name">Obsidian Subscription</div></div>
             </div>
-            <div class="task-item todo-task" data-task="consolidate">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Consolidate Dropbox and iCloud</div></div>
-            </div>
           </div>
           <div class="tasks-section">
             <div class="tasks-section-label label-backlog">Side Projects</div>
@@ -366,19 +356,17 @@
   </div>
 
   <div class="footer">
-    Last updated April 15, 2026 · <a href="https://calendar.google.com" target="_blank">Open Google Calendar</a> · <a href="https://app.asana.com" target="_blank">Open Asana</a>
+    Last updated April 16, 2026 · <a href="https://calendar.google.com" target="_blank">Open Google Calendar</a> · <a href="https://app.asana.com" target="_blank">Open Asana</a>
   </div>
 
   <script>
     // ── FREE TIME TRACKER ──
+    // Recurring busy blocks for today (Thu Apr 16)
     const busyBlocks = [
       [9*60,      9*60+30],   // Emails 9:00–9:30
       [11*60,     11*60+30],  // EDW standup 11:00–11:30
       [11*60+30,  12*60],     // EDW ingestion 11:30–12:00
       [12*60,     13*60],     // Lunch 12:00–1:00
-      [14*60,     15*60],     // dbt webinar 2:00–3:00
-      [16*60+30,  17*60+30],  // DAG Fixes + International Celebration 4:30–5:30
-      [18*60,     21*60],     // Rita's Spirit Night 6:00–9:00
     ];
     const DAY_START = 7 * 60;
     const DAY_END   = 22 * 60;
@@ -427,7 +415,7 @@
     setInterval(renderFreeTime, 60000);
 
     // ── TASKS ──
-    const STORAGE_KEY = 'helana-dashboard-2026-04-15';
+    const STORAGE_KEY = 'helana-dashboard-2026-04-16';
     const tasks = document.querySelectorAll('.task-item[data-task]');
     const totalTasks = tasks.length;
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
