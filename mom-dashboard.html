@@ -9,12 +9,60 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #fdf6f0; color: #3a2e2a; min-height: 100vh; padding: 32px 24px; }
 
-    .header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; }
+    /* ── TOKEN SETUP MODAL ── */
+    #token-modal {
+      position: fixed; inset: 0; background: rgba(60,40,30,0.55); z-index: 1000;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    #token-modal.hidden { display: none; }
+    .modal-box {
+      background: #fff; border-radius: 20px; padding: 32px 36px;
+      max-width: 480px; width: 100%; box-shadow: 0 8px 40px rgba(92,61,46,0.18);
+    }
+    .modal-box h2 { font-family: 'Playfair Display', serif; color: #5c3d2e; font-size: 1.4rem; margin-bottom: 8px; }
+    .modal-box p { font-size: 0.82rem; color: #7a5e52; line-height: 1.6; margin-bottom: 20px; }
+    .modal-box ol { font-size: 0.82rem; color: #7a5e52; line-height: 2; margin-left: 18px; margin-bottom: 20px; }
+    .modal-box ol a { color: #c0694a; }
+    .token-input-wrap { display: flex; gap: 10px; margin-bottom: 10px; }
+    .token-input-wrap input {
+      flex: 1; border: 1.5px solid #e8c9b8; border-radius: 10px; padding: 10px 14px;
+      font-size: 0.82rem; font-family: monospace; color: #3a2e2a; outline: none;
+    }
+    .token-input-wrap input:focus { border-color: #c0694a; }
+    .btn-primary {
+      background: #c0694a; color: #fff; border: none; border-radius: 10px;
+      padding: 10px 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #a85538; }
+    .modal-note { font-size: 0.72rem; color: #b39589; }
+    .modal-note a { color: #b39589; }
+
+    /* ── LAYOUT ── */
+    .header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; }
     .header-left h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: #5c3d2e; line-height: 1.1; }
     .header-left .subtitle { font-size: 0.9rem; color: #9e7b6b; margin-top: 4px; font-weight: 300; letter-spacing: 0.04em; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
     .date-badge { background: #e8c9b8; color: #5c3d2e; border-radius: 12px; padding: 10px 18px; text-align: right; }
     .date-badge .day { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 600; line-height: 1; }
     .date-badge .month-year { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+    .btn-refresh {
+      background: #fff; border: 1.5px solid #e8c9b8; border-radius: 10px;
+      padding: 8px 14px; font-size: 0.78rem; color: #9e7b6b; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .btn-refresh:hover { border-color: #c0694a; color: #c0694a; }
+    .btn-refresh.spinning .refresh-icon { display: inline-block; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .refresh-icon { display: inline-block; }
+
+    .btn-settings {
+      background: #fff; border: 1.5px solid #e8c9b8; border-radius: 10px;
+      padding: 8px 12px; font-size: 0.82rem; color: #9e7b6b; cursor: pointer;
+      transition: all 0.2s; line-height: 1;
+    }
+    .btn-settings:hover { border-color: #c0694a; color: #c0694a; }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .col-full { grid-column: 1 / -1; }
@@ -22,17 +70,9 @@
     .card-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: #5c3d2e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
     .card-title .icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
 
-    /* NOTICE BANNER */
+    /* NOTICE / URGENT BANNERS */
     .notice-banner { background: #fff8e8; border: 1px solid #f0d890; border-radius: 10px; padding: 8px 14px; font-size: 0.75rem; color: #8a6a20; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-
-    /* URGENT BANNER */
     .urgent-banner { background: #fef0f0; border: 1px solid #f0b0b0; border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; color: #a03030; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
-
-    /* ALL DAY BANNERS */
-    .allday-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-    .allday-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; }
-    .allday-work { background: #dff0e8; color: #2d7a52; }
-    .allday-personal { background: #fde8d8; color: #b05e34; }
 
     /* SCHEDULE */
     .schedule-list { display: flex; flex-direction: column; gap: 10px; }
@@ -53,7 +93,7 @@
 
     /* FREE TIME */
     .free-time-list { display: flex; flex-direction: column; gap: 8px; }
-    .free-slot { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #f0faf5; border-left: 3px solid #42d692; transition: opacity 0.4s ease; }
+    .free-slot { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #f0faf5; border-left: 3px solid #42d692; }
     .free-slot.past { opacity: 0.35; background: #f5f5f5; border-left-color: #ccc; }
     .free-slot.past .slot-label { text-decoration: line-through; color: #aaa; }
     .free-slot.current { background: #e6f9f0; border-left-color: #1db87a; box-shadow: 0 0 0 2px #a8ecd0; }
@@ -95,6 +135,11 @@
     .gift-days .lbl { font-size: 0.58rem; color: #9e7b6b; text-transform: uppercase; letter-spacing: 0.07em; }
 
     /* TASKS */
+    .tasks-status { font-size: 0.76rem; color: #9e7b6b; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .tasks-status .dot-live { width: 7px; height: 7px; border-radius: 50%; background: #42d692; display: inline-block; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .tasks-status .dot-error { width: 7px; height: 7px; border-radius: 50%; background: #e08050; display: inline-block; }
+
     .progress-wrap { margin-bottom: 18px; }
     .progress-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
     .progress-label { font-size: 0.72rem; color: #9e7b6b; font-weight: 500; }
@@ -107,30 +152,36 @@
     .tasks-section-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 8px; padding: 3px 8px; border-radius: 6px; display: inline-block; }
     .label-overdue { background: #fce8e8; color: #b03434; }
     .label-todo { background: #f0edf8; color: #6644aa; }
-    .label-backlog { background: #f0f0f5; color: #666; }
+    .label-daily { background: #fde8d8; color: #b05e34; }
     .label-work { background: #dff0e8; color: #2d7a52; }
+    .label-projects { background: #f0f0f5; color: #666; }
 
     .task-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 10px; margin-bottom: 6px; cursor: pointer; transition: opacity 0.2s ease; user-select: none; }
     .task-item:hover { opacity: 0.85; }
     .task-item.overdue-task { background: #fdf0f0; }
     .task-item.todo-task { background: #f5f2fb; }
+    .task-item.daily-task { background: #fff5ee; }
     .task-item.work-task { background: #f0faf5; }
-    .task-item.backlog-task { background: #f7f7fb; }
+    .task-item.project-task { background: #f7f7fb; }
     .task-item.done { opacity: 0.4; }
     .task-item.done .task-name { text-decoration: line-through; color: #a09088; }
     .task-item.done .task-check { background: #a0c8a0 !important; border-color: #a0c8a0 !important; display: flex; align-items: center; justify-content: center; }
     .task-item.done .task-check::after { content: '✓'; font-size: 10px; color: #fff; font-weight: 700; }
-    .task-check { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+    .task-check { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; flex-shrink: 0; }
     .overdue-task .task-check { border: 2px solid #e8a0a0; }
     .todo-task .task-check { border: 2px solid #b09add; }
+    .daily-task .task-check { border: 2px solid #e8b090; }
     .work-task .task-check { border: 2px solid #70c9a0; }
-    .backlog-task .task-check { border: 2px solid #c0c0d0; }
+    .project-task .task-check { border: 2px solid #c0c0d0; }
     .task-name { font-size: 0.83rem; color: #3a2e2a; line-height: 1.4; font-weight: 500; }
-    .task-meta { font-size: 0.68rem; margin-top: 2px; }
-    .task-meta.overdue-meta { color: #c07070; font-weight: 600; }
+    .task-meta { font-size: 0.68rem; margin-top: 2px; color: #c07070; font-weight: 600; }
+
+    .skeleton { background: linear-gradient(90deg, #f0e6de 25%, #fdf6f0 50%, #f0e6de 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; height: 36px; margin-bottom: 6px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     .footer { margin-top: 28px; text-align: center; font-size: 0.7rem; color: #c4a898; letter-spacing: 0.04em; }
     .footer a { color: #b39589; text-decoration: none; }
+    #last-updated { }
 
     @media (max-width: 640px) {
       .grid, .tasks-cols { grid-template-columns: 1fr; }
@@ -141,30 +192,49 @@
 </head>
 <body>
 
-  <div class="header">
-    <div class="header-left">
-      <h1>Good morning, Helana ✨</h1>
-      <div class="subtitle">Here's what's on your plate today</div>
-    </div>
-    <div class="date-badge">
-      <div class="day">20</div>
-      <div class="month-year">April 2026 · Monday</div>
+  <!-- ── TOKEN SETUP MODAL ── -->
+  <div id="token-modal" class="hidden">
+    <div class="modal-box">
+      <h2>Connect Asana 🌿</h2>
+      <p>To load your tasks live, the dashboard needs your Asana Personal Access Token. It's saved only in <em>your</em> browser — never sent anywhere else.</p>
+      <ol>
+        <li>Go to <a href="https://app.asana.com/0/my-apps" target="_blank">app.asana.com/0/my-apps</a></li>
+        <li>Click <strong>"Create new token"</strong></li>
+        <li>Name it <em>Mom Dashboard</em> and copy it</li>
+      </ol>
+      <div class="token-input-wrap">
+        <input type="password" id="pat-input" placeholder="Paste your token here…" autocomplete="off" />
+        <button class="btn-primary" onclick="saveToken()">Save</button>
+      </div>
+      <p class="modal-note">Token is stored in localStorage in this browser only. <a href="#" onclick="skipToken()">Skip for now →</a></p>
     </div>
   </div>
 
-  <!-- URGENT ALERT -->
-  <div class="urgent-banner">
-    🚨 Sadie's birthday is in 6 days — buy her gift by this Thursday, Apr 23!
+  <div class="header">
+    <div class="header-left">
+      <h1 id="greeting">Good morning, Helana ✨</h1>
+      <div class="subtitle">Here's what's on your plate today</div>
+    </div>
+    <div class="header-right">
+      <button class="btn-settings" title="Asana settings" onclick="showTokenModal()">⚙️</button>
+      <button class="btn-refresh" id="refresh-btn" onclick="refreshAsana()">
+        <span class="refresh-icon">↻</span> Refresh Tasks
+      </button>
+      <div class="date-badge">
+        <div class="day" id="date-day"></div>
+        <div class="month-year" id="date-month-year"></div>
+      </div>
+    </div>
   </div>
+
+  <div id="urgent-container"></div>
 
   <div class="grid">
 
     <!-- TODAY'S SCHEDULE -->
     <div class="card col-full">
       <div class="card-title"><div class="icon" style="background:#fde8d8;">📅</div>Today's Schedule</div>
-
-      <div class="notice-banner">⚠️ Google Calendar is temporarily unavailable — showing your known recurring meetings. <a href="https://calendar.google.com" target="_blank" style="color:#8a6a20;font-weight:600;">Open Calendar</a> to check for anything else today.</div>
-
+      <div class="notice-banner">⚠️ Google Calendar integration is temporarily unavailable — showing recurring meetings. <a href="https://calendar.google.com" target="_blank" style="color:#8a6a20;font-weight:600;">Open Calendar</a></div>
       <div class="schedule-list">
         <div class="schedule-item cal-work">
           <div class="time-col"><div class="time-start">9:00 AM</div><div class="time-end">9:30 AM</div></div>
@@ -198,171 +268,36 @@
     <!-- COMING UP -->
     <div class="card">
       <div class="card-title"><div class="icon" style="background:#fce8f3;">🎉</div>Coming Up</div>
-      <div class="countdown-list">
-        <div class="countdown-item hot">
-          <div style="font-size:1.2rem">🎂</div>
-          <div class="countdown-info"><div class="countdown-name">Sadie's 5th Birthday Party!</div><div class="countdown-date">Apr 26 · Philadelphia Ethical Society</div></div>
-          <div class="countdown-days"><div class="days-number urgent">6</div><div class="days-label">days</div></div>
-        </div>
-        <div class="countdown-item">
-          <div style="font-size:1.2rem">🎂</div>
-          <div class="countdown-info"><div class="countdown-name">Dad's Birthday</div><div class="countdown-date">May 2</div></div>
-          <div class="countdown-days"><div class="days-number">12</div><div class="days-label">days</div></div>
-        </div>
-        <div class="countdown-item">
-          <div style="font-size:1.2rem">🌳</div>
-          <div class="countdown-info"><div class="countdown-name">Mason's Birthday – Treehouse World</div><div class="countdown-date">May 3 · 1:30 PM</div></div>
-          <div class="countdown-days"><div class="days-number">13</div><div class="days-label">days</div></div>
-        </div>
-        <div class="countdown-item">
-          <div style="font-size:1.2rem">🎈</div>
-          <div class="countdown-info"><div class="countdown-name">Oliver's 3rd Birthday</div><div class="countdown-date">May 3 · Imagination Street, Exton</div></div>
-          <div class="countdown-days"><div class="days-number">13</div><div class="days-label">days</div></div>
-        </div>
-        <div class="countdown-item">
-          <div style="font-size:1.2rem">🎂</div>
-          <div class="countdown-info"><div class="countdown-name">Ryan's Birthday Dinner</div><div class="countdown-date">May 16</div></div>
-          <div class="countdown-days"><div class="days-number">26</div><div class="days-label">days</div></div>
-        </div>
-      </div>
+      <div class="countdown-list" id="countdown-list"></div>
     </div>
 
     <!-- GIFT REMINDERS -->
     <div class="card">
       <div class="card-title"><div class="icon" style="background:#fce8f3;">🎁</div>Gift Reminders</div>
-      <div class="gift-list">
-        <div class="gift-item urgent-gift">
-          <div style="font-size:1.3rem">🎁</div>
-          <div class="gift-info">
-            <div class="gift-name">Sadie's 5th Birthday</div>
-            <div class="gift-dates">Party: Apr 26 · <span class="gift-due urgent">⚠️ Buy by Apr 23</span></div>
-          </div>
-          <div class="gift-days"><div class="num urgent">3</div><div class="lbl">days left</div></div>
-        </div>
-        <div class="gift-item">
-          <div style="font-size:1.3rem">🎁</div>
-          <div class="gift-info">
-            <div class="gift-name">Dad's Birthday</div>
-            <div class="gift-dates">May 2 · <span class="gift-due soon">Buy by Apr 29</span></div>
-          </div>
-          <div class="gift-days"><div class="num">9</div><div class="lbl">days left</div></div>
-        </div>
-        <div class="gift-item">
-          <div style="font-size:1.3rem">🎁</div>
-          <div class="gift-info">
-            <div class="gift-name">Oliver's 3rd Birthday</div>
-            <div class="gift-dates">Party: May 3 · <span class="gift-due soon">Buy by Apr 30</span></div>
-          </div>
-          <div class="gift-days"><div class="num">10</div><div class="lbl">days left</div></div>
-        </div>
-        <div class="gift-item">
-          <div style="font-size:1.3rem">🎁</div>
-          <div class="gift-info">
-            <div class="gift-name">Mason's Birthday</div>
-            <div class="gift-dates">May 4 · <span class="gift-due ok">Buy by May 1</span></div>
-          </div>
-          <div class="gift-days"><div class="num">11</div><div class="lbl">days left</div></div>
-        </div>
-        <div class="gift-item">
-          <div style="font-size:1.3rem">🎁</div>
-          <div class="gift-info">
-            <div class="gift-name">Ryan's Birthday</div>
-            <div class="gift-dates">May 19 · <span class="gift-due ok">Buy by May 16</span></div>
-          </div>
-          <div class="gift-days"><div class="num">26</div><div class="lbl">days left</div></div>
-        </div>
-      </div>
+      <div class="gift-list" id="gift-list"></div>
     </div>
 
-    <!-- TASKS -->
+    <!-- TASKS (live from Asana) -->
     <div class="card col-full">
-      <div class="card-title"><div class="icon" style="background:#fde8d8;">✅</div>Tasks &amp; Reminders</div>
+      <div class="card-title">
+        <div class="icon" style="background:#fde8d8;">✅</div>Tasks &amp; Reminders
+        <div class="tasks-status" id="tasks-status"></div>
+      </div>
       <div class="progress-wrap">
         <div class="progress-header">
           <span class="progress-label">Today's progress</span>
-          <span class="progress-count" id="progress-count">0 / 13 done</span>
+          <span class="progress-count" id="progress-count">0 / 0 done</span>
         </div>
         <div class="progress-track"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
       </div>
-      <div class="tasks-cols">
+      <div class="tasks-cols" id="tasks-cols">
+        <!-- skeletons while loading -->
         <div>
-          <div class="tasks-section">
-            <div class="tasks-section-label label-overdue">Overdue</div>
-            <div class="task-item overdue-task" data-task="send-computer">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Send Old Work Computer Back</div><div class="task-meta overdue-meta">Past due</div></div>
-            </div>
-            <div class="task-item overdue-task" data-task="cvs-picture">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Pick Up CVS Picture</div><div class="task-meta overdue-meta">Past due</div></div>
-            </div>
-            <div class="task-item overdue-task" data-task="christmas-deco">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Put Away Christmas Decorations</div><div class="task-meta overdue-meta">Past due</div></div>
-            </div>
-            <div class="task-item overdue-task" data-task="mason-ent">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Mason ENT Appointment</div><div class="task-meta overdue-meta">Past due</div></div>
-            </div>
-            <div class="task-item overdue-task" data-task="fidelity">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Fidelity Account</div><div class="task-meta overdue-meta">Past due</div></div>
-            </div>
-          </div>
-          <div class="tasks-section">
-            <div class="tasks-section-label label-todo">Daily</div>
-            <div class="task-item todo-task" data-task="cardio">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Cardio – 30 Minutes</div></div>
-            </div>
-            <div class="task-item todo-task" data-task="core">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Core – 25 Minutes</div></div>
-            </div>
-          </div>
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+          <div class="skeleton"></div><div class="skeleton"></div>
         </div>
         <div>
-          <div class="tasks-section">
-            <div class="tasks-section-label label-todo">To Do</div>
-            <div class="task-item todo-task" data-task="mira-camp">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Mira West Chester Friends Camp Paperwork</div></div>
-            </div>
-            <div class="task-item todo-task" data-task="birth-certs">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Upload Kids Birth Certificates for Benefits</div></div>
-            </div>
-            <div class="task-item todo-task" data-task="life-insurance">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Finish Forms for Upped Life Insurance</div></div>
-            </div>
-            <div class="task-item todo-task" data-task="john-nice">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Send Something Nice to John</div></div>
-            </div>
-            <div class="task-item todo-task" data-task="reorder-contacts">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Reorder Contacts</div></div>
-            </div>
-          </div>
-          <div class="tasks-section">
-            <div class="tasks-section-label label-work">Work</div>
-            <div class="task-item work-task" data-task="r1clear">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Source Configuration R1Clear</div></div>
-            </div>
-            <div class="task-item work-task" data-task="tran-servers">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">TRAN Servers</div></div>
-            </div>
-          </div>
-          <div class="tasks-section">
-            <div class="tasks-section-label label-backlog">Side Projects</div>
-            <div class="task-item backlog-task" data-task="coupon-app">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Coupon App with Stacking Rules</div></div>
-            </div>
-          </div>
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
         </div>
       </div>
     </div>
@@ -370,85 +305,369 @@
   </div>
 
   <div class="footer">
-    Last updated April 20, 2026 · <a href="https://calendar.google.com" target="_blank">Open Google Calendar</a> · <a href="https://app.asana.com" target="_blank">Open Asana</a>
+    <span id="last-updated">Loading…</span> · <a href="https://calendar.google.com" target="_blank">Open Google Calendar</a> · <a href="https://app.asana.com" target="_blank">Open Asana</a>
   </div>
 
   <script>
-    // ── FREE TIME TRACKER ──
-    // Recurring busy blocks for today (Mon Apr 20)
-    const busyBlocks = [
-      [9*60,      9*60+30],   // Emails 9:00–9:30
-      [11*60,     11*60+30],  // EDW standup 11:00–11:30
-      [11*60+30,  12*60],     // EDW ingestion 11:30–12:00
-      [12*60,     13*60],     // Lunch 12:00–1:00
-    ];
-    const DAY_START = 7 * 60;
-    const DAY_END   = 22 * 60;
+  // ─────────────────────────────────────────
+  //  CONFIG
+  // ─────────────────────────────────────────
+  const PAT_KEY     = 'helana-asana-pat';
+  const STORAGE_KEY = 'helana-task-checks-' + new Date().toISOString().slice(0,10);
 
-    function fmtTime(mins) {
-      const h = Math.floor(mins / 60), m = mins % 60;
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      const hh = h > 12 ? h - 12 : (h === 0 ? 12 : h);
-      return `${hh}:${m.toString().padStart(2,'0')} ${ampm}`;
-    }
+  const ASANA_PROJECTS = [
+    { id: '1198904311483261', label: 'General To Do',      type: 'todo'    },
+    { id: '1207543774582065', label: 'Daily Tasks',         type: 'daily'   },
+    { id: '1209642498761949', label: 'Side Projects',       type: 'project' },
+    { id: '1211411129974472', label: 'Daily Work Tasks',    type: 'work'    },
+  ];
 
-    function buildFreeSlots() {
-      const sorted = [...busyBlocks].sort((a,b) => a[0]-b[0]);
-      const slots = []; let cursor = DAY_START;
-      for (const [s, e] of sorted) {
-        if (s > cursor) slots.push([cursor, Math.min(s, DAY_END)]);
-        cursor = Math.max(cursor, e);
-      }
-      if (cursor < DAY_END) slots.push([cursor, DAY_END]);
-      return slots.filter(([s,e]) => e - s >= 15);
-    }
+  // Countdowns & gift reminders — update dates here each season
+  const EVENTS = [
+    { name: "Sadie's 5th Birthday Party!",     date: '2026-04-26', detail: 'Apr 26 · Philadelphia Ethical Society', emoji: '🎂', gift: true  },
+    { name: "Dad's Birthday",                  date: '2026-05-02', detail: 'May 2',                                  emoji: '🎂', gift: true  },
+    { name: "Mason's Birthday – Treehouse",    date: '2026-05-03', detail: 'May 3 · 1:30 PM',                       emoji: '🌳', gift: true  },
+    { name: "Oliver's 3rd Birthday",           date: '2026-05-03', detail: 'May 3 · Imagination Street, Exton',     emoji: '🎈', gift: true  },
+    { name: "Ryan's Birthday Dinner",          date: '2026-05-16', detail: 'May 16',                                 emoji: '🎂', gift: true  },
+  ];
 
-    function renderFreeTime() {
-      const now = new Date();
-      const nowMins = now.getHours() * 60 + now.getMinutes();
-      const container = document.getElementById('free-time-list');
-      container.innerHTML = '';
-      buildFreeSlots().forEach(([start, end]) => {
-        const dur = end - start;
-        const hrs = Math.floor(dur/60), mins = dur%60;
-        const durStr = hrs > 0 ? (mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`) : `${mins}m`;
-        const isPast = nowMins >= end, isCurrent = nowMins >= start && nowMins < end;
-        const div = document.createElement('div');
-        div.className = 'free-slot' + (isPast ? ' past' : isCurrent ? ' current' : '');
-        div.innerHTML = `
-          <div class="slot-icon">${isPast ? '✓' : isCurrent ? '⏱️' : '🟢'}</div>
-          <div class="slot-info">
-            <div class="slot-label">${fmtTime(start)} – ${fmtTime(end)}</div>
-            <div class="slot-duration">${durStr} free</div>
+  // ─────────────────────────────────────────
+  //  DATE / GREETING
+  // ─────────────────────────────────────────
+  function initDate() {
+    const now  = new Date();
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('date-day').textContent = now.getDate();
+    document.getElementById('date-month-year').textContent = months[now.getMonth()] + ' ' + now.getFullYear() + ' · ' + days[now.getDay()];
+    const h = now.getHours();
+    const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greeting').textContent = greet + ', Helana ✨';
+  }
+
+  // ─────────────────────────────────────────
+  //  COUNTDOWNS + GIFT REMINDERS
+  // ─────────────────────────────────────────
+  function dateDiff(dateStr) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const target = new Date(dateStr + 'T00:00:00');
+    return Math.round((target - today) / 86400000);
+  }
+
+  function renderCountdowns() {
+    const container = document.getElementById('countdown-list');
+    container.innerHTML = '';
+    EVENTS.forEach(ev => {
+      const d = dateDiff(ev.date);
+      if (d < 0) return;
+      const hot = d <= 7;
+      container.innerHTML += `
+        <div class="countdown-item ${hot ? 'hot' : ''}">
+          <div style="font-size:1.2rem">${ev.emoji}</div>
+          <div class="countdown-info">
+            <div class="countdown-name">${ev.name}</div>
+            <div class="countdown-date">${ev.detail}</div>
           </div>
-          <span class="slot-badge ${isPast ? 'badge-past' : isCurrent ? 'badge-now' : 'badge-upcoming'}">${isPast ? 'passed' : isCurrent ? 'now' : 'upcoming'}</span>`;
-        container.appendChild(div);
-      });
-    }
-    renderFreeTime();
-    setInterval(renderFreeTime, 60000);
-
-    // ── TASKS ──
-    const STORAGE_KEY = 'helana-dashboard-2026-04-20';
-    const tasks = document.querySelectorAll('.task-item[data-task]');
-    const totalTasks = tasks.length;
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    function updateProgress() {
-      const done = document.querySelectorAll('.task-item.done').length;
-      const pct = totalTasks > 0 ? Math.round((done/totalTasks)*100) : 0;
-      document.getElementById('progress-bar').style.width = pct + '%';
-      document.getElementById('progress-count').textContent = done + ' / ' + totalTasks + ' done';
-    }
-    tasks.forEach(task => {
-      if (saved[task.dataset.task]) task.classList.add('done');
-      task.addEventListener('click', () => {
-        task.classList.toggle('done');
-        saved[task.dataset.task] = task.classList.contains('done');
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-        updateProgress();
-      });
+          <div class="countdown-days">
+            <div class="days-number ${hot ? 'urgent' : ''}">${d}</div>
+            <div class="days-label">days</div>
+          </div>
+        </div>`;
     });
+  }
+
+  function renderGifts() {
+    const container = document.getElementById('gift-list');
+    container.innerHTML = '';
+    const urgentNames = [];
+    EVENTS.filter(e => e.gift).forEach(ev => {
+      const partyDays = dateDiff(ev.date);
+      if (partyDays < 0) return;
+      const buyBy = new Date(ev.date + 'T00:00:00');
+      buyBy.setDate(buyBy.getDate() - 3);
+      const buyDays = Math.round((buyBy - new Date().setHours(0,0,0,0)) / 86400000);
+      const urgency = buyDays <= 3 ? 'urgent' : buyDays <= 7 ? 'soon' : 'ok';
+      const buyStr = buyBy.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+      if (urgency === 'urgent') urgentNames.push({ name: ev.name.replace(/[''']/g,"'"), buyStr });
+      container.innerHTML += `
+        <div class="gift-item ${urgency === 'urgent' ? 'urgent-gift' : ''}">
+          <div style="font-size:1.3rem">🎁</div>
+          <div class="gift-info">
+            <div class="gift-name">${ev.name}</div>
+            <div class="gift-dates">${ev.detail} · <span class="gift-due ${urgency}">${urgency === 'urgent' ? '⚠️ ' : ''}Buy by ${buyStr}</span></div>
+          </div>
+          <div class="gift-days"><div class="num ${urgency === 'urgent' ? 'urgent' : ''}">${buyDays}</div><div class="lbl">days left</div></div>
+        </div>`;
+    });
+
+    // Urgent banner at top
+    const ub = document.getElementById('urgent-container');
+    ub.innerHTML = '';
+    urgentNames.forEach(({ name, buyStr }) => {
+      ub.innerHTML += `<div class="urgent-banner">🚨 ${name} — buy the gift by ${buyStr}!</div>`;
+    });
+  }
+
+  // ─────────────────────────────────────────
+  //  FREE TIME TRACKER
+  // ─────────────────────────────────────────
+  const busyBlocks = [
+    [9*60,      9*60+30],
+    [11*60,     11*60+30],
+    [11*60+30,  12*60],
+    [12*60,     13*60],
+  ];
+  const DAY_START = 7*60, DAY_END = 22*60;
+
+  function fmtTime(mins) {
+    const h = Math.floor(mins/60), m = mins%60;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const hh = h > 12 ? h-12 : (h===0 ? 12 : h);
+    return `${hh}:${m.toString().padStart(2,'0')} ${ampm}`;
+  }
+
+  function buildFreeSlots() {
+    const sorted = [...busyBlocks].sort((a,b)=>a[0]-b[0]);
+    const slots = []; let cursor = DAY_START;
+    for (const [s,e] of sorted) {
+      if (s > cursor) slots.push([cursor, Math.min(s,DAY_END)]);
+      cursor = Math.max(cursor,e);
+    }
+    if (cursor < DAY_END) slots.push([cursor,DAY_END]);
+    return slots.filter(([s,e])=>e-s>=15);
+  }
+
+  function renderFreeTime() {
+    const now = new Date();
+    const nowMins = now.getHours()*60 + now.getMinutes();
+    const container = document.getElementById('free-time-list');
+    container.innerHTML = '';
+    buildFreeSlots().forEach(([start,end]) => {
+      const dur = end-start;
+      const hrs = Math.floor(dur/60), mins = dur%60;
+      const durStr = hrs > 0 ? (mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`) : `${mins}m`;
+      const isPast = nowMins >= end, isCurrent = nowMins >= start && nowMins < end;
+      const div = document.createElement('div');
+      div.className = 'free-slot' + (isPast?' past':isCurrent?' current':'');
+      div.innerHTML = `
+        <div class="slot-icon">${isPast?'✓':isCurrent?'⏱️':'🟢'}</div>
+        <div class="slot-info">
+          <div class="slot-label">${fmtTime(start)} – ${fmtTime(end)}</div>
+          <div class="slot-duration">${durStr} free</div>
+        </div>
+        <span class="slot-badge ${isPast?'badge-past':isCurrent?'badge-now':'badge-upcoming'}">${isPast?'passed':isCurrent?'now':'upcoming'}</span>`;
+      container.appendChild(div);
+    });
+  }
+
+  // ─────────────────────────────────────────
+  //  TOKEN MANAGEMENT
+  // ─────────────────────────────────────────
+  function getToken() { return localStorage.getItem(PAT_KEY) || ''; }
+
+  function saveToken() {
+    const val = document.getElementById('pat-input').value.trim();
+    if (!val) { alert('Please paste your Asana token.'); return; }
+    localStorage.setItem(PAT_KEY, val);
+    document.getElementById('token-modal').classList.add('hidden');
+    refreshAsana();
+  }
+
+  function skipToken() {
+    document.getElementById('token-modal').classList.add('hidden');
+    setTasksError('No Asana token — click ⚙️ to connect');
+  }
+
+  function showTokenModal() {
+    document.getElementById('pat-input').value = getToken();
+    document.getElementById('token-modal').classList.remove('hidden');
+  }
+
+  // ─────────────────────────────────────────
+  //  ASANA API
+  // ─────────────────────────────────────────
+  async function fetchProject(pat, projectId) {
+    const url = `https://app.asana.com/api/1.0/tasks?project=${projectId}&opt_fields=name,completed,due_on,permalink_url&limit=100`;
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${pat}`, 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    return json.data.filter(t => !t.completed && t.name && t.name.trim());
+  }
+
+  async function refreshAsana() {
+    const pat = getToken();
+    if (!pat) { showTokenModal(); return; }
+
+    const btn = document.getElementById('refresh-btn');
+    btn.classList.add('spinning');
+    setTasksStatus('loading');
+
+    try {
+      const results = await Promise.all(
+        ASANA_PROJECTS.map(p => fetchProject(pat, p.id).then(tasks => ({ ...p, tasks })))
+      );
+      renderTasks(results);
+      const now = new Date();
+      document.getElementById('last-updated').textContent =
+        'Last updated ' + now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) +
+        ' at ' + now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+      setTasksStatus('live');
+    } catch (err) {
+      console.error('Asana fetch error:', err);
+      if (err.message.includes('401') || err.message.includes('403')) {
+        setTasksError('Token invalid — click ⚙️ to update');
+        showTokenModal();
+      } else {
+        setTasksError('Could not reach Asana — check connection');
+      }
+    } finally {
+      btn.classList.remove('spinning');
+    }
+  }
+
+  function setTasksStatus(state) {
+    const el = document.getElementById('tasks-status');
+    if (state === 'live') {
+      el.innerHTML = '<span class="dot-live"></span> Live from Asana';
+    } else if (state === 'loading') {
+      el.innerHTML = '<span style="color:#9e7b6b">Fetching from Asana…</span>';
+    }
+  }
+
+  function setTasksError(msg) {
+    const el = document.getElementById('tasks-status');
+    el.innerHTML = `<span class="dot-error"></span> <span style="color:#c07050">${msg}</span>`;
+  }
+
+  // ─────────────────────────────────────────
+  //  RENDER TASKS
+  // ─────────────────────────────────────────
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+  function taskHtml(task, cssClass, checkClass) {
+    const id = 'task-' + task.gid;
+    const isDone = !!saved[task.gid];
+    const today = new Date().toISOString().slice(0,10);
+    const isOverdue = task.due_on && task.due_on < today;
+    const overdueMeta = isOverdue
+      ? `<div class="task-meta">Due ${new Date(task.due_on+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>` : '';
+    return `
+      <div class="task-item ${cssClass}${isDone?' done':''}" data-gid="${task.gid}" onclick="toggleTask(this)">
+        <div class="task-check ${checkClass}"></div>
+        <div class="task-text">
+          <div class="task-name">${task.name}</div>${overdueMeta}
+        </div>
+      </div>`;
+  }
+
+  function renderTasks(projects) {
+    // Sort each project's tasks: overdue first, then by name
+    const today = new Date().toISOString().slice(0,10);
+    const byType = {};
+    projects.forEach(p => {
+      const overdue = p.tasks.filter(t => t.due_on && t.due_on < today);
+      const normal  = p.tasks.filter(t => !t.due_on || t.due_on >= today);
+      byType[p.type] = { overdue, normal, label: p.label };
+    });
+
+    // Build two columns
+    let leftHtml = '', rightHtml = '';
+
+    // LEFT: overdue tasks (across all projects) + daily
+    const allOverdue = projects.flatMap(p =>
+      p.tasks.filter(t => t.due_on && t.due_on < today)
+    );
+    if (allOverdue.length) {
+      leftHtml += `<div class="tasks-section">
+        <div class="tasks-section-label label-overdue">Overdue</div>
+        ${allOverdue.map(t => taskHtml(t,'overdue-task','')).join('')}
+      </div>`;
+    }
+
+    // Daily tasks
+    const daily = byType.daily?.normal || [];
+    const dailyTop = daily.filter(t => ['Cardio - 30 Minutes','Core - 25 minutes '].some(n => t.name.startsWith(n.trim())));
+    if (dailyTop.length) {
+      leftHtml += `<div class="tasks-section">
+        <div class="tasks-section-label label-daily">Daily</div>
+        ${dailyTop.map(t => taskHtml(t,'daily-task','')).join('')}
+      </div>`;
+    }
+
+    // RIGHT: To Do + Work + Side Projects
+    const todo = byType.todo?.normal?.slice(0,6) || [];
+    if (todo.length) {
+      rightHtml += `<div class="tasks-section">
+        <div class="tasks-section-label label-todo">To Do</div>
+        ${todo.map(t => taskHtml(t,'todo-task','')).join('')}
+      </div>`;
+    }
+
+    const work = byType.work?.normal || [];
+    if (work.length) {
+      rightHtml += `<div class="tasks-section">
+        <div class="tasks-section-label label-work">Work</div>
+        ${work.map(t => taskHtml(t,'work-task','')).join('')}
+      </div>`;
+    }
+
+    const proj = byType.project?.normal?.slice(0,3) || [];
+    if (proj.length) {
+      rightHtml += `<div class="tasks-section">
+        <div class="tasks-section-label label-projects">Side Projects</div>
+        ${proj.map(t => taskHtml(t,'project-task','')).join('')}
+      </div>`;
+    }
+
+    document.getElementById('tasks-cols').innerHTML =
+      `<div>${leftHtml || '<p style="color:#b39589;font-size:0.8rem">No overdue tasks 🎉</p>'}</div><div>${rightHtml}</div>`;
+
     updateProgress();
+  }
+
+  // ─────────────────────────────────────────
+  //  TASK CHECKBOX TOGGLE
+  // ─────────────────────────────────────────
+  function toggleTask(el) {
+    const gid = el.dataset.gid;
+    el.classList.toggle('done');
+    saved[gid] = el.classList.contains('done');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const all  = document.querySelectorAll('#tasks-cols .task-item[data-gid]');
+    const done = document.querySelectorAll('#tasks-cols .task-item.done');
+    const pct  = all.length > 0 ? Math.round((done.length/all.length)*100) : 0;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-count').textContent = done.length + ' / ' + all.length + ' done';
+  }
+
+  // ─────────────────────────────────────────
+  //  INIT
+  // ─────────────────────────────────────────
+  initDate();
+  renderCountdowns();
+  renderGifts();
+  renderFreeTime();
+  setInterval(renderFreeTime, 60000);
+
+  // Load Asana on startup
+  window.addEventListener('DOMContentLoaded', () => {
+    if (!getToken()) {
+      showTokenModal();
+    } else {
+      refreshAsana();
+    }
+  });
+
+  // Allow Enter key in token input
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.activeElement.id === 'pat-input') saveToken();
+  });
   </script>
 </body>
 </html>
