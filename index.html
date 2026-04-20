@@ -139,9 +139,13 @@
     /* ── FREE TIME ── */
     .free-time-list { display: flex; flex-direction: column; gap: 8px; }
     .free-slot { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #f0faf5; border-left: 3px solid #42d692; }
-    .free-slot.past { opacity: 0.35; background: #f5f5f5; border-left-color: #ccc; }
+    .free-slot.past { opacity: 0.38; background: #f5f5f5; border-left-color: #ccc; }
     .free-slot.past .slot-label { text-decoration: line-through; color: #aaa; }
     .free-slot.current { background: #e6f9f0; border-left-color: #1db87a; box-shadow: 0 0 0 2px #a8ecd0; }
+    .free-slot.sleep-slot { background: #f2eefa; border-left-color: #9b7de8; }
+    .free-slot.sleep-slot .slot-label { color: #5c3d8a; }
+    .free-slot.sleep-slot .slot-duration { color: #9b7de8; }
+    .free-slot.sleep-slot.current { background: #ece6f8; border-left-color: #7044cc; box-shadow: 0 0 0 2px #d4c8f8; }
     .slot-icon { font-size: 1.1rem; }
     .slot-info { flex: 1; }
     .slot-label { font-size: 0.85rem; font-weight: 600; color: #2d5a40; }
@@ -150,6 +154,8 @@
     .badge-now { background: #1db87a; color: #fff; }
     .badge-past { background: #ddd; color: #999; }
     .badge-upcoming { background: #c2f0da; color: #2d7a52; }
+    .badge-sleep { background: #ddd4f8; color: #6644aa; }
+    .badge-sleep-now { background: #7044cc; color: #fff; }
 
     /* ── COUNTDOWNS ── */
     .countdown-list { display: flex; flex-direction: column; gap: 10px; }
@@ -710,7 +716,12 @@ const DEFAULT_BUSY = [
 const DAY_START = 7*60, DAY_END = 22*60;
 
 function updateFreeTimeFromEvents(events) {
-  const timed = events.filter(e => e.start?.dateTime);
+  const timed = events.filter(e => {
+    if (!e.start?.dateTime) return false;
+    // Filter out multi-day events (e.g. OOO blocks spanning >24h)
+    const dur = new Date(e.end.dateTime) - new Date(e.start.dateTime);
+    return dur <= 24 * 60 * 60 * 1000;
+  });
   if (!timed.length) { busyBlocks = DEFAULT_BUSY; renderFreeTime(); return; }
   busyBlocks = timed.map(e => {
     const s = new Date(e.start.dateTime), en = new Date(e.end.dateTime);
@@ -749,6 +760,17 @@ function renderFreeTime() {
       <span class="slot-badge ${isPast?'badge-past':isCurrent?'badge-now':'badge-upcoming'}">${isPast?'passed':isCurrent?'now':'upcoming'}</span>`;
     c.appendChild(d);
   });
+
+  // Sleep / R&R block: 10 PM – 7 AM
+  const SLEEP_START = 22*60, SLEEP_END_DISPLAY = 7*60; // display only, wraps midnight
+  const isSleepNow = nm >= SLEEP_START || nm < SLEEP_END_DISPLAY;
+  const sleep=document.createElement('div');
+  sleep.className='free-slot sleep-slot'+(isSleepNow?' current':'');
+  sleep.innerHTML=`<div class="slot-icon">🌙</div>
+    <div class="slot-info"><div class="slot-label">10:00 PM – 7:00 AM</div>
+    <div class="slot-duration">Rest &amp; Recharge</div></div>
+    <span class="slot-badge ${isSleepNow?'badge-sleep-now':'badge-sleep'}">${isSleepNow?'now':'tonight'}</span>`;
+  c.appendChild(sleep);
 }
 
 // ════════════════════════════════════════════
