@@ -534,60 +534,114 @@ function getStoredGcalToken() {
 }
 
 async function fetchCalendar() {
-  // Try stored token first, otherwise request new one silently
   let token = getStoredGcalToken() || gcalAccessToken;
   if (!token) {
     const clientId = localStorage.getItem(GCAL_CLIENT_ID_KEY);
     if (!clientId) { showCalConnectPrompt(); return; }
-    // Try silent token refresh
     initGoogleAuth();
     if (gcalTokenClient) {
       gcalTokenClient.requestAccessToken({ prompt: '' });
-      return; // callback will call fetchCalendar again
+      return;
     }
     showCalConnectPrompt();
     return;
   }
 
-  setStatus('cal-status','loading','Fetching…');
-  const today = new Date(); today.setHours(0,0,0,0);
-  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
-  const params = new URLSearchParams({
-    timeMin: today.toISOString(),
-    timeMax: tomorrow.toISOString(),
-    singleEvents: 'true',
-    orderBy: 'startTime',
-    maxResults: '50'
-  });
+  setStatus('cal-status','loading','Connecting…');
 
   try {
-    const allEvents = (await Promise.all(
-      CALENDAR_IDS.map(async cal => {
+    // ── Step 1: verify token + API access via calendarList ──
+    const listRes = await fetch(
+      'https://www.googleapis.com/calendar/v3/users/me/calendarList',
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    if (listRes.status === 401) { throw new Error('TOKEN_EXPIRED'); }
+
+    if (!listRes.ok) {
+      const errBody = await listRes.json().catch(()=>({}));
+      const msg = errBody.error?.message || ('HTTP ' + listRes.status);
+      // Common case: API not enabled in Google Cloud
+      if (listRes.status === 403) {
+        showCalError(`⚠️ ${msg}.<br><br>Make sure the <strong>Google Calendar API</strong> is enabled in your <a href="https://console.cloud.google.com/apis/library" target="_blank">Google Cloud project</a>, and that the <code>calendar.readonly</code> scope is listed on the OAuth consent screen.`);
+        setStatus('cal-status','error','API not enabled — see schedule card');
+        return;
+      }
+      throw new Error(msg);
+    }
+
+    const calList = await listRes.json();
+    const available = new Set((calList.items||[]).map(c=>c.id));
+
+    // ── Step 2: build today's time window in LOCAL timezone ──
+    const now = new Date();
+    const tzOff  = now.getTimezoneOffset(); // minutes behind UTC
+    const tzSign = tzOff > 0 ? '-' : '+';
+    const tzHH   = String(Math.floor(Math.abs(tzOff)/60)).padStart(2,'0');
+    const tzMM   = String(Math.abs(tzOff)%60).padStart(2,'0');
+    const tzStr  = `${tzSign}${tzHH}:${tzMM}`;
+    const y = now.getFullYear(), mo = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
+    const timeMin = `${y}-${mo}-${d}T00:00:00${tzStr}`;
+    const timeMax = `${y}-${mo}-${d}T23:59:59${tzStr}`;
+    const params  = new URLSearchParams({ timeMin, timeMax, singleEvents:'true', orderBy:'startTime', maxResults:'50' });
+
+    // ── Step 3: fetch events from each calendar (report errors per-cal) ──
+    const settled = await Promise.allSettled(
+      CALENDAR_IDS.filter(c => available.has(c.id)).map(async cal => {
         const r = await fetch(
           `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?${params}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (r.status === 401) throw new Error('401');
-        if (!r.ok) return [];
+        if (!r.ok) {
+          const eb = await r.json().catch(()=>({}));
+          throw new Error(`${cal.label}: ${eb.error?.message || 'HTTP '+r.status}`);
+        }
         const j = await r.json();
         return (j.items||[]).map(e => ({ ...e, _cal: cal }));
       })
-    )).flat();
+    );
+
+    const errors    = settled.filter(s=>s.status==='rejected').map(s=>s.reason?.message||'unknown error');
+    const allEvents = settled.filter(s=>s.status==='fulfilled').flatMap(s=>s.value);
+
+    if (allEvents.length === 0 && errors.length > 0) {
+      showCalError('Could not load events:<br>' + errors.map(e=>`• ${e}`).join('<br>'));
+      setStatus('cal-status','error','Error fetching events');
+      return;
+    }
+
+    // clear any error message
+    const errEl = document.getElementById('cal-error-msg');
+    if (errEl) errEl.remove();
 
     renderSchedule(allEvents);
-    setStatus('cal-status','live','Live from Google Calendar');
     updateFreeTimeFromEvents(allEvents);
+    setStatus('cal-status','live', errors.length ? `Live (${CALENDAR_IDS.length - errors.length}/${CALENDAR_IDS.length} cals)` : 'Live from Google Calendar');
+
   } catch(e) {
-    if (String(e).includes('401')) {
-      // Token expired — request new one silently
+    console.error('Calendar error:', e);
+    if (e.message === 'TOKEN_EXPIRED') {
       localStorage.removeItem(GCAL_TOKEN_KEY);
       gcalAccessToken = null;
-      initGoogleAuth();
-      if (gcalTokenClient) gcalTokenClient.requestAccessToken({ prompt: '' });
+      setStatus('cal-status','error','Session expired — reconnect in ⚙️');
+      showCalConnectPrompt();
     } else {
-      setStatus('cal-status','error','Could not load calendar');
+      showCalError('Error: ' + e.message);
+      setStatus('cal-status','error', e.message.slice(0,50));
     }
   }
+}
+
+function showCalError(html) {
+  const body = document.getElementById('schedule-body');
+  let errEl = document.getElementById('cal-error-msg');
+  if (!errEl) {
+    errEl = document.createElement('div');
+    errEl.id = 'cal-error-msg';
+    errEl.style.cssText = 'background:#fff8e8;border:1px solid #f0d890;border-radius:10px;padding:12px 16px;font-size:0.79rem;color:#6a4a10;line-height:1.7;margin-bottom:12px';
+    body.prepend(errEl);
+  }
+  errEl.innerHTML = html;
 }
 
 function renderSchedule(events) {
