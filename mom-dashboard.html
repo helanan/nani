@@ -4,77 +4,108 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Helana's Dashboard</title>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #fdf6f0; color: #3a2e2a; min-height: 100vh; padding: 32px 24px; }
 
-    /* ── TOKEN SETUP MODAL ── */
-    #token-modal {
+    /* ── MODALS ── */
+    .modal-overlay {
       position: fixed; inset: 0; background: rgba(60,40,30,0.55); z-index: 1000;
       display: flex; align-items: center; justify-content: center; padding: 24px;
     }
-    #token-modal.hidden { display: none; }
+    .modal-overlay.hidden { display: none; }
     .modal-box {
       background: #fff; border-radius: 20px; padding: 32px 36px;
-      max-width: 480px; width: 100%; box-shadow: 0 8px 40px rgba(92,61,46,0.18);
+      max-width: 500px; width: 100%; box-shadow: 0 8px 40px rgba(92,61,46,0.18);
     }
     .modal-box h2 { font-family: 'Playfair Display', serif; color: #5c3d2e; font-size: 1.4rem; margin-bottom: 8px; }
-    .modal-box p { font-size: 0.82rem; color: #7a5e52; line-height: 1.6; margin-bottom: 20px; }
-    .modal-box ol { font-size: 0.82rem; color: #7a5e52; line-height: 2; margin-left: 18px; margin-bottom: 20px; }
+    .modal-box p { font-size: 0.82rem; color: #7a5e52; line-height: 1.6; margin-bottom: 16px; }
+    .modal-box ol { font-size: 0.82rem; color: #7a5e52; line-height: 2.1; margin-left: 18px; margin-bottom: 18px; }
     .modal-box ol a { color: #c0694a; }
-    .token-input-wrap { display: flex; gap: 10px; margin-bottom: 10px; }
-    .token-input-wrap input {
+    .modal-box ol li { margin-bottom: 2px; }
+    .modal-box ol code { background: #f5ede8; padding: 1px 5px; border-radius: 4px; font-size: 0.78rem; }
+    .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+    .input-row input {
       flex: 1; border: 1.5px solid #e8c9b8; border-radius: 10px; padding: 10px 14px;
       font-size: 0.82rem; font-family: monospace; color: #3a2e2a; outline: none;
     }
-    .token-input-wrap input:focus { border-color: #c0694a; }
+    .input-row input:focus { border-color: #c0694a; }
     .btn-primary {
       background: #c0694a; color: #fff; border: none; border-radius: 10px;
-      padding: 10px 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
-      transition: background 0.2s;
+      padding: 10px 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; white-space: nowrap;
     }
     .btn-primary:hover { background: #a85538; }
-    .modal-note { font-size: 0.72rem; color: #b39589; }
-    .modal-note a { color: #b39589; }
+    .btn-secondary {
+      background: #fff; color: #9e7b6b; border: 1.5px solid #e8c9b8; border-radius: 10px;
+      padding: 10px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 8px;
+    }
+    .btn-secondary:hover { border-color: #c0694a; color: #c0694a; }
+    .modal-note { font-size: 0.72rem; color: #b39589; margin-top: 8px; }
+    .modal-note a { color: #b39589; text-decoration: underline; cursor: pointer; }
+    .modal-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .modal-tab {
+      flex: 1; padding: 8px; text-align: center; border-radius: 10px; cursor: pointer;
+      font-size: 0.8rem; font-weight: 600; border: 1.5px solid #e8c9b8; color: #9e7b6b; background: #fff;
+    }
+    .modal-tab.active { background: #fdf0ea; border-color: #c0694a; color: #c0694a; }
+    .modal-section { display: none; }
+    .modal-section.active { display: block; }
+    .connected-chip {
+      display: inline-flex; align-items: center; gap: 6px; background: #e8f8f0;
+      border: 1px solid #a0dcc0; border-radius: 20px; padding: 5px 12px;
+      font-size: 0.75rem; font-weight: 600; color: #2d7a52; margin-bottom: 14px;
+    }
 
     /* ── LAYOUT ── */
     .header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; }
     .header-left h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: #5c3d2e; line-height: 1.1; }
     .header-left .subtitle { font-size: 0.9rem; color: #9e7b6b; margin-top: 4px; font-weight: 300; letter-spacing: 0.04em; }
-    .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
     .date-badge { background: #e8c9b8; color: #5c3d2e; border-radius: 12px; padding: 10px 18px; text-align: right; }
     .date-badge .day { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 600; line-height: 1; }
     .date-badge .month-year { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
 
+    .btn-icon {
+      background: #fff; border: 1.5px solid #e8c9b8; border-radius: 10px;
+      padding: 8px 12px; font-size: 0.82rem; color: #9e7b6b; cursor: pointer; line-height: 1;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-icon:hover { border-color: #c0694a; color: #c0694a; }
     .btn-refresh {
       background: #fff; border: 1.5px solid #e8c9b8; border-radius: 10px;
       padding: 8px 14px; font-size: 0.78rem; color: #9e7b6b; font-weight: 600;
       cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
     }
     .btn-refresh:hover { border-color: #c0694a; color: #c0694a; }
-    .btn-refresh.spinning .refresh-icon { display: inline-block; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-refresh.spinning .refresh-icon { animation: spin 0.8s linear infinite; }
     .refresh-icon { display: inline-block; }
-
-    .btn-settings {
-      background: #fff; border: 1.5px solid #e8c9b8; border-radius: 10px;
-      padding: 8px 12px; font-size: 0.82rem; color: #9e7b6b; cursor: pointer;
-      transition: all 0.2s; line-height: 1;
-    }
-    .btn-settings:hover { border-color: #c0694a; color: #c0694a; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .col-full { grid-column: 1 / -1; }
     .card { background: #fff; border-radius: 18px; padding: 22px 24px; box-shadow: 0 2px 12px rgba(92,61,46,0.07); }
     .card-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: #5c3d2e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
     .card-title .icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .card-status { margin-left: auto; font-size: 0.68rem; display: flex; align-items: center; gap: 5px; }
+    .dot-live { width: 7px; height: 7px; border-radius: 50%; background: #42d692; display: inline-block; animation: pulse 2s ease-in-out infinite; }
+    .dot-error { width: 7px; height: 7px; border-radius: 50%; background: #e08050; display: inline-block; }
+    .dot-pending { width: 7px; height: 7px; border-radius: 50%; background: #c0c0c0; display: inline-block; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
 
-    /* NOTICE / URGENT BANNERS */
+    /* ── BANNERS ── */
+    .urgent-banner { background: #fef0f0; border: 1px solid #f0b0b0; border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; color: #a03030; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
     .notice-banner { background: #fff8e8; border: 1px solid #f0d890; border-radius: 10px; padding: 8px 14px; font-size: 0.75rem; color: #8a6a20; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-    .urgent-banner { background: #fef0f0; border: 1px solid #f0b0b0; border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; color: #a03030; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
 
-    /* SCHEDULE */
+    /* ── SCHEDULE ── */
+    .allday-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .allday-pill { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .allday-work { background: #dff0e8; color: #2d7a52; }
+    .allday-personal { background: #fde8d8; color: #b05e34; }
+    .allday-family { background: #f0e8fd; color: #6644aa; }
+
     .schedule-list { display: flex; flex-direction: column; gap: 10px; }
     .schedule-item { display: flex; align-items: stretch; gap: 14px; }
     .time-col { min-width: 80px; text-align: right; padding-top: 2px; }
@@ -85,13 +116,27 @@
     .line { width: 2px; flex: 1; min-height: 20px; margin-top: 4px; border-radius: 2px; }
     .event-col { flex: 1; padding-bottom: 6px; }
     .event-name { font-size: 0.875rem; font-weight: 500; color: #3a2e2a; line-height: 1.3; }
+    .event-sub { font-size: 0.7rem; color: #9e7b6b; margin-top: 3px; }
     .event-tag { display: inline-block; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 20px; margin-top: 4px; }
-    .tag-personal { background: #fde8d8; color: #b05e34; }
-    .tag-work { background: #dff0e8; color: #2d7a52; }
-    .cal-personal .dot { background: #d06b64; } .cal-personal .line { background: #f2c5c0; }
-    .cal-work .dot { background: #42d692; } .cal-work .line { background: #c2f0da; }
+    .tag-work    { background: #dff0e8; color: #2d7a52; }
+    .tag-personal{ background: #fde8d8; color: #b05e34; }
+    .tag-family  { background: #f0e8fd; color: #6644aa; }
+    .cal-primary .dot { background: #d06b64; } .cal-primary .line { background: #f2c5c0; }
+    .cal-work    .dot { background: #42d692; } .cal-work .line   { background: #c2f0da; }
+    .cal-family  .dot { background: #9b7de8; } .cal-family .line { background: #ddd4f8; }
 
-    /* FREE TIME */
+    .sched-empty { font-size: 0.82rem; color: #b39589; font-style: italic; padding: 8px 0; }
+    .sched-connect { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .btn-gcal-connect {
+      background: #4285f4; color: #fff; border: none; border-radius: 10px;
+      padding: 10px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-gcal-connect:hover { background: #3367d6; }
+    .skeleton { background: linear-gradient(90deg,#f0e6de 25%,#fdf6f0 50%,#f0e6de 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:8px; height:40px; margin-bottom:8px; }
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* ── FREE TIME ── */
     .free-time-list { display: flex; flex-direction: column; gap: 8px; }
     .free-slot { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #f0faf5; border-left: 3px solid #42d692; }
     .free-slot.past { opacity: 0.35; background: #f5f5f5; border-left-color: #ccc; }
@@ -106,7 +151,7 @@
     .badge-past { background: #ddd; color: #999; }
     .badge-upcoming { background: #c2f0da; color: #2d7a52; }
 
-    /* COUNTDOWNS */
+    /* ── COUNTDOWNS ── */
     .countdown-list { display: flex; flex-direction: column; gap: 10px; }
     .countdown-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #fdf6f0; }
     .countdown-item.hot { background: #fef0ee; }
@@ -118,7 +163,7 @@
     .days-number.urgent { color: #b03030; }
     .days-label { font-size: 0.6rem; color: #9e7b6b; text-transform: uppercase; letter-spacing: 0.07em; }
 
-    /* GIFT REMINDERS */
+    /* ── GIFTS ── */
     .gift-list { display: flex; flex-direction: column; gap: 10px; }
     .gift-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #fdf6f0; }
     .gift-item.urgent-gift { background: #fef0ee; border-left: 3px solid #d05050; }
@@ -134,54 +179,43 @@
     .gift-days .num.urgent { color: #b03030; }
     .gift-days .lbl { font-size: 0.58rem; color: #9e7b6b; text-transform: uppercase; letter-spacing: 0.07em; }
 
-    /* TASKS */
-    .tasks-status { font-size: 0.76rem; color: #9e7b6b; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-    .tasks-status .dot-live { width: 7px; height: 7px; border-radius: 50%; background: #42d692; display: inline-block; animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .tasks-status .dot-error { width: 7px; height: 7px; border-radius: 50%; background: #e08050; display: inline-block; }
-
+    /* ── TASKS ── */
     .progress-wrap { margin-bottom: 18px; }
     .progress-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
     .progress-label { font-size: 0.72rem; color: #9e7b6b; font-weight: 500; }
     .progress-count { font-size: 0.72rem; color: #9e7b6b; }
     .progress-track { height: 6px; background: #f0e6de; border-radius: 10px; overflow: hidden; }
-    .progress-bar { height: 100%; background: linear-gradient(90deg, #e89a6a, #c0694a); border-radius: 10px; transition: width 0.4s ease; }
-
+    .progress-bar { height: 100%; background: linear-gradient(90deg,#e89a6a,#c0694a); border-radius: 10px; transition: width 0.4s ease; }
     .tasks-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .tasks-section { margin-bottom: 16px; }
     .tasks-section-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 8px; padding: 3px 8px; border-radius: 6px; display: inline-block; }
-    .label-overdue { background: #fce8e8; color: #b03434; }
-    .label-todo { background: #f0edf8; color: #6644aa; }
-    .label-daily { background: #fde8d8; color: #b05e34; }
-    .label-work { background: #dff0e8; color: #2d7a52; }
+    .label-overdue  { background: #fce8e8; color: #b03434; }
+    .label-todo     { background: #f0edf8; color: #6644aa; }
+    .label-daily    { background: #fde8d8; color: #b05e34; }
+    .label-work     { background: #dff0e8; color: #2d7a52; }
     .label-projects { background: #f0f0f5; color: #666; }
-
     .task-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 10px; margin-bottom: 6px; cursor: pointer; transition: opacity 0.2s ease; user-select: none; }
     .task-item:hover { opacity: 0.85; }
-    .task-item.overdue-task { background: #fdf0f0; }
-    .task-item.todo-task { background: #f5f2fb; }
-    .task-item.daily-task { background: #fff5ee; }
-    .task-item.work-task { background: #f0faf5; }
-    .task-item.project-task { background: #f7f7fb; }
+    .overdue-task  { background: #fdf0f0; }
+    .todo-task     { background: #f5f2fb; }
+    .daily-task    { background: #fff5ee; }
+    .work-task     { background: #f0faf5; }
+    .project-task  { background: #f7f7fb; }
     .task-item.done { opacity: 0.4; }
     .task-item.done .task-name { text-decoration: line-through; color: #a09088; }
     .task-item.done .task-check { background: #a0c8a0 !important; border-color: #a0c8a0 !important; display: flex; align-items: center; justify-content: center; }
     .task-item.done .task-check::after { content: '✓'; font-size: 10px; color: #fff; font-weight: 700; }
-    .task-check { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; flex-shrink: 0; }
-    .overdue-task .task-check { border: 2px solid #e8a0a0; }
-    .todo-task .task-check { border: 2px solid #b09add; }
-    .daily-task .task-check { border: 2px solid #e8b090; }
-    .work-task .task-check { border: 2px solid #70c9a0; }
-    .project-task .task-check { border: 2px solid #c0c0d0; }
+    .task-check { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+    .overdue-task .task-check  { border: 2px solid #e8a0a0; }
+    .todo-task .task-check     { border: 2px solid #b09add; }
+    .daily-task .task-check    { border: 2px solid #e8b090; }
+    .work-task .task-check     { border: 2px solid #70c9a0; }
+    .project-task .task-check  { border: 2px solid #c0c0d0; }
     .task-name { font-size: 0.83rem; color: #3a2e2a; line-height: 1.4; font-weight: 500; }
-    .task-meta { font-size: 0.68rem; margin-top: 2px; color: #c07070; font-weight: 600; }
-
-    .skeleton { background: linear-gradient(90deg, #f0e6de 25%, #fdf6f0 50%, #f0e6de 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; height: 36px; margin-bottom: 6px; }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .task-meta { font-size: 0.68rem; color: #c07070; font-weight: 600; margin-top: 2px; }
 
     .footer { margin-top: 28px; text-align: center; font-size: 0.7rem; color: #c4a898; letter-spacing: 0.04em; }
     .footer a { color: #b39589; text-decoration: none; }
-    #last-updated { }
 
     @media (max-width: 640px) {
       .grid, .tasks-cols { grid-template-columns: 1fr; }
@@ -192,482 +226,625 @@
 </head>
 <body>
 
-  <!-- ── TOKEN SETUP MODAL ── -->
-  <div id="token-modal" class="hidden">
-    <div class="modal-box">
-      <h2>Connect Asana 🌿</h2>
-      <p>To load your tasks live, the dashboard needs your Asana Personal Access Token. It's saved only in <em>your</em> browser — never sent anywhere else.</p>
+<!-- ══════════════════════════════════════════
+     SETTINGS MODAL (Asana + Google Calendar)
+══════════════════════════════════════════ -->
+<div id="settings-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h2>Dashboard Settings ⚙️</h2>
+    <div class="modal-tabs">
+      <div class="modal-tab active" onclick="switchTab('asana')">🌿 Asana</div>
+      <div class="modal-tab" onclick="switchTab('gcal')">📅 Google Calendar</div>
+    </div>
+
+    <!-- ASANA TAB -->
+    <div id="tab-asana" class="modal-section active">
+      <div id="asana-connected-chip" class="connected-chip hidden">✅ Asana connected</div>
+      <p>Paste your Asana Personal Access Token to load tasks live. Generate one at <a href="https://app.asana.com/0/my-apps" target="_blank">app.asana.com/0/my-apps</a> → "Create new token".</p>
+      <div class="input-row">
+        <input type="password" id="pat-input" placeholder="Paste Asana token…" autocomplete="off"/>
+        <button class="btn-primary" onclick="saveAsanaToken()">Save</button>
+      </div>
+      <p class="modal-note">Stored only in this browser's localStorage. <a onclick="clearAsanaToken()">Clear token</a></p>
+    </div>
+
+    <!-- GOOGLE CALENDAR TAB -->
+    <div id="tab-gcal" class="modal-section">
+      <div id="gcal-connected-chip" class="connected-chip hidden">✅ Google Calendar connected</div>
+      <p>Paste your Google OAuth Client ID to load your calendar live. To get one:</p>
       <ol>
-        <li>Go to <a href="https://app.asana.com/0/my-apps" target="_blank">app.asana.com/0/my-apps</a></li>
-        <li>Click <strong>"Create new token"</strong></li>
-        <li>Name it <em>Mom Dashboard</em> and copy it</li>
+        <li>Go to <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a></li>
+        <li>Create a project → enable <strong>Google Calendar API</strong></li>
+        <li>Credentials → Create → <strong>OAuth client ID</strong> → Web app</li>
+        <li>Add <code>https://helanan.github.io</code> as an authorized origin</li>
+        <li>Copy the Client ID below</li>
       </ol>
-      <div class="token-input-wrap">
-        <input type="password" id="pat-input" placeholder="Paste your token here…" autocomplete="off" />
-        <button class="btn-primary" onclick="saveToken()">Save</button>
+      <div class="input-row">
+        <input type="text" id="gcal-client-id-input" placeholder="123456789-abc….apps.googleusercontent.com" autocomplete="off"/>
+        <button class="btn-primary" onclick="saveGcalClientId()">Save</button>
       </div>
-      <p class="modal-note">Token is stored in localStorage in this browser only. <a href="#" onclick="skipToken()">Skip for now →</a></p>
-    </div>
-  </div>
-
-  <div class="header">
-    <div class="header-left">
-      <h1 id="greeting">Good morning, Helana ✨</h1>
-      <div class="subtitle">Here's what's on your plate today</div>
-    </div>
-    <div class="header-right">
-      <button class="btn-settings" title="Asana settings" onclick="showTokenModal()">⚙️</button>
-      <button class="btn-refresh" id="refresh-btn" onclick="refreshAsana()">
-        <span class="refresh-icon">↻</span> Refresh Tasks
+      <p class="modal-note">Then click "Connect Google Calendar" to sign in. <a onclick="clearGcalToken()">Disconnect</a></p>
+      <button class="btn-secondary" id="gcal-connect-btn" onclick="connectGoogleCalendar()" style="display:none">
+        🔐 Connect Google Calendar
       </button>
-      <div class="date-badge">
-        <div class="day" id="date-day"></div>
-        <div class="month-year" id="date-month-year"></div>
+    </div>
+
+    <button class="btn-secondary" onclick="closeSettings()">Done</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<div class="header">
+  <div class="header-left">
+    <h1 id="greeting">Good morning, Helana ✨</h1>
+    <div class="subtitle">Here's what's on your plate today</div>
+  </div>
+  <div class="header-right">
+    <button class="btn-icon" onclick="openSettings()">⚙️ Settings</button>
+    <button class="btn-refresh" id="refresh-btn" onclick="refreshAll()">
+      <span class="refresh-icon">↻</span> Refresh
+    </button>
+    <div class="date-badge">
+      <div class="day" id="date-day"></div>
+      <div class="month-year" id="date-month-year"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Urgent gift banners -->
+<div id="urgent-container"></div>
+
+<div class="grid">
+
+  <!-- TODAY'S SCHEDULE (live from Google Calendar) -->
+  <div class="card col-full">
+    <div class="card-title">
+      <div class="icon" style="background:#fde8d8;">📅</div>
+      Today's Schedule
+      <div class="card-status" id="cal-status">
+        <span class="dot-pending"></span>
+        <span style="color:#aaa;font-size:0.7rem">Not connected</span>
+      </div>
+    </div>
+    <div id="allday-row" class="allday-row" style="display:none"></div>
+    <div id="schedule-body">
+      <!-- connect prompt -->
+      <div class="sched-connect" id="cal-connect-prompt">
+        <p style="font-size:0.82rem;color:#9e7b6b;margin-bottom:0">Connect Google Calendar to see today's events here.</p>
+        <button class="btn-gcal-connect" onclick="openSettings();switchTab('gcal')">
+          📅 Connect Google Calendar
+        </button>
       </div>
     </div>
   </div>
 
-  <div id="urgent-container"></div>
-
-  <div class="grid">
-
-    <!-- TODAY'S SCHEDULE -->
-    <div class="card col-full">
-      <div class="card-title"><div class="icon" style="background:#fde8d8;">📅</div>Today's Schedule</div>
-      <div class="notice-banner">⚠️ Google Calendar integration is temporarily unavailable — showing recurring meetings. <a href="https://calendar.google.com" target="_blank" style="color:#8a6a20;font-weight:600;">Open Calendar</a></div>
-      <div class="schedule-list">
-        <div class="schedule-item cal-work">
-          <div class="time-col"><div class="time-start">9:00 AM</div><div class="time-end">9:30 AM</div></div>
-          <div class="line-col"><div class="dot"></div><div class="line"></div></div>
-          <div class="event-col"><div class="event-name">Emails and To Do's</div><span class="event-tag tag-work">Work</span></div>
-        </div>
-        <div class="schedule-item cal-work">
-          <div class="time-col"><div class="time-start">11:00 AM</div><div class="time-end">11:30 AM</div></div>
-          <div class="line-col"><div class="dot"></div><div class="line"></div></div>
-          <div class="event-col"><div class="event-name">EDW – Data Vault & Info Mart Standup</div><span class="event-tag tag-work">Work · Teams</span></div>
-        </div>
-        <div class="schedule-item cal-work">
-          <div class="time-col"><div class="time-start">11:30 AM</div><div class="time-end">12:00 PM</div></div>
-          <div class="line-col"><div class="dot"></div><div class="line"></div></div>
-          <div class="event-col"><div class="event-name">EDW – Ingestion Stand Up</div><span class="event-tag tag-work">Work · Teams</span></div>
-        </div>
-        <div class="schedule-item cal-work">
-          <div class="time-col"><div class="time-start">12:00 PM</div><div class="time-end">1:00 PM</div></div>
-          <div class="line-col"><div class="dot"></div></div>
-          <div class="event-col"><div class="event-name">Lunch 🍽️</div><span class="event-tag tag-work">Work</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FREE TIME TRACKER -->
-    <div class="card">
-      <div class="card-title"><div class="icon" style="background:#e6f9f0;">🕐</div>Open Time Today</div>
-      <div class="free-time-list" id="free-time-list"></div>
-    </div>
-
-    <!-- COMING UP -->
-    <div class="card">
-      <div class="card-title"><div class="icon" style="background:#fce8f3;">🎉</div>Coming Up</div>
-      <div class="countdown-list" id="countdown-list"></div>
-    </div>
-
-    <!-- GIFT REMINDERS -->
-    <div class="card">
-      <div class="card-title"><div class="icon" style="background:#fce8f3;">🎁</div>Gift Reminders</div>
-      <div class="gift-list" id="gift-list"></div>
-    </div>
-
-    <!-- TASKS (live from Asana) -->
-    <div class="card col-full">
-      <div class="card-title">
-        <div class="icon" style="background:#fde8d8;">✅</div>Tasks &amp; Reminders
-        <div class="tasks-status" id="tasks-status"></div>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-header">
-          <span class="progress-label">Today's progress</span>
-          <span class="progress-count" id="progress-count">0 / 0 done</span>
-        </div>
-        <div class="progress-track"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
-      </div>
-      <div class="tasks-cols" id="tasks-cols">
-        <!-- skeletons while loading -->
-        <div>
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-          <div class="skeleton"></div><div class="skeleton"></div>
-        </div>
-        <div>
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-        </div>
-      </div>
-    </div>
-
+  <!-- FREE TIME TRACKER -->
+  <div class="card">
+    <div class="card-title"><div class="icon" style="background:#e6f9f0;">🕐</div>Open Time Today</div>
+    <div class="free-time-list" id="free-time-list"></div>
   </div>
 
-  <div class="footer">
-    <span id="last-updated">Loading…</span> · <a href="https://calendar.google.com" target="_blank">Open Google Calendar</a> · <a href="https://app.asana.com" target="_blank">Open Asana</a>
+  <!-- COMING UP -->
+  <div class="card">
+    <div class="card-title"><div class="icon" style="background:#fce8f3;">🎉</div>Coming Up</div>
+    <div class="countdown-list" id="countdown-list"></div>
   </div>
 
-  <script>
-  // ─────────────────────────────────────────
-  //  CONFIG
-  // ─────────────────────────────────────────
-  const PAT_KEY     = 'helana-asana-pat';
-  const STORAGE_KEY = 'helana-task-checks-' + new Date().toISOString().slice(0,10);
+  <!-- GIFT REMINDERS -->
+  <div class="card">
+    <div class="card-title"><div class="icon" style="background:#fce8f3;">🎁</div>Gift Reminders</div>
+    <div class="gift-list" id="gift-list"></div>
+  </div>
 
-  const ASANA_PROJECTS = [
-    { id: '1198904311483261', label: 'General To Do',      type: 'todo'    },
-    { id: '1207543774582065', label: 'Daily Tasks',         type: 'daily'   },
-    { id: '1209642498761949', label: 'Side Projects',       type: 'project' },
-    { id: '1211411129974472', label: 'Daily Work Tasks',    type: 'work'    },
-  ];
+  <!-- TASKS (live from Asana) -->
+  <div class="card col-full">
+    <div class="card-title">
+      <div class="icon" style="background:#fde8d8;">✅</div>
+      Tasks &amp; Reminders
+      <div class="card-status" id="tasks-status">
+        <span class="dot-pending"></span>
+        <span style="color:#aaa;font-size:0.7rem">Not connected</span>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="progress-label">Today's progress</span>
+        <span class="progress-count" id="progress-count">0 / 0 done</span>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    </div>
+    <div class="tasks-cols" id="tasks-cols">
+      <div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <div><div class="skeleton"></div><div class="skeleton"></div></div>
+    </div>
+  </div>
 
-  // Countdowns & gift reminders — update dates here each season
-  const EVENTS = [
-    { name: "Sadie's 5th Birthday Party!",     date: '2026-04-26', detail: 'Apr 26 · Philadelphia Ethical Society', emoji: '🎂', gift: true  },
-    { name: "Dad's Birthday",                  date: '2026-05-02', detail: 'May 2',                                  emoji: '🎂', gift: true  },
-    { name: "Mason's Birthday – Treehouse",    date: '2026-05-03', detail: 'May 3 · 1:30 PM',                       emoji: '🌳', gift: true  },
-    { name: "Oliver's 3rd Birthday",           date: '2026-05-03', detail: 'May 3 · Imagination Street, Exton',     emoji: '🎈', gift: true  },
-    { name: "Ryan's Birthday Dinner",          date: '2026-05-16', detail: 'May 16',                                 emoji: '🎂', gift: true  },
-  ];
+</div>
 
-  // ─────────────────────────────────────────
-  //  DATE / GREETING
-  // ─────────────────────────────────────────
-  function initDate() {
-    const now  = new Date();
-    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    document.getElementById('date-day').textContent = now.getDate();
-    document.getElementById('date-month-year').textContent = months[now.getMonth()] + ' ' + now.getFullYear() + ' · ' + days[now.getDay()];
-    const h = now.getHours();
-    const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('greeting').textContent = greet + ', Helana ✨';
-  }
+<div class="footer">
+  <span id="last-updated">Loading…</span> ·
+  <a href="https://calendar.google.com" target="_blank">Google Calendar</a> ·
+  <a href="https://app.asana.com" target="_blank">Asana</a>
+</div>
 
-  // ─────────────────────────────────────────
-  //  COUNTDOWNS + GIFT REMINDERS
-  // ─────────────────────────────────────────
-  function dateDiff(dateStr) {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const target = new Date(dateStr + 'T00:00:00');
-    return Math.round((target - today) / 86400000);
-  }
+<script>
+// ════════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════════
+const ASANA_PAT_KEY       = 'helana-asana-pat';
+const GCAL_CLIENT_ID_KEY  = 'helana-gcal-client-id';
+const GCAL_TOKEN_KEY      = 'helana-gcal-token';
+const TASK_CHECK_KEY      = 'helana-task-checks-' + new Date().toISOString().slice(0,10);
 
-  function renderCountdowns() {
-    const container = document.getElementById('countdown-list');
-    container.innerHTML = '';
-    EVENTS.forEach(ev => {
-      const d = dateDiff(ev.date);
-      if (d < 0) return;
-      const hot = d <= 7;
-      container.innerHTML += `
-        <div class="countdown-item ${hot ? 'hot' : ''}">
-          <div style="font-size:1.2rem">${ev.emoji}</div>
-          <div class="countdown-info">
-            <div class="countdown-name">${ev.name}</div>
-            <div class="countdown-date">${ev.detail}</div>
-          </div>
-          <div class="countdown-days">
-            <div class="days-number ${hot ? 'urgent' : ''}">${d}</div>
-            <div class="days-label">days</div>
-          </div>
-        </div>`;
-    });
-  }
+const GCAL_SCOPE   = 'https://www.googleapis.com/auth/calendar.readonly';
+const CALENDAR_IDS = [
+  { id: 'helanan@gmail.com',                                            label: 'Personal', calClass: 'cal-primary', tagClass: 'tag-personal' },
+  { id: 'family02601563996674487579@group.calendar.google.com',         label: 'Family',   calClass: 'cal-family',  tagClass: 'tag-family'   },
+  { id: 'ja769bv1lgjge9meo393hnfr1vd7pj3f@import.calendar.google.com', label: 'Work',     calClass: 'cal-work',    tagClass: 'tag-work'     },
+];
 
-  function renderGifts() {
-    const container = document.getElementById('gift-list');
-    container.innerHTML = '';
-    const urgentNames = [];
-    EVENTS.filter(e => e.gift).forEach(ev => {
-      const partyDays = dateDiff(ev.date);
-      if (partyDays < 0) return;
-      const buyBy = new Date(ev.date + 'T00:00:00');
-      buyBy.setDate(buyBy.getDate() - 3);
-      const buyDays = Math.round((buyBy - new Date().setHours(0,0,0,0)) / 86400000);
-      const urgency = buyDays <= 3 ? 'urgent' : buyDays <= 7 ? 'soon' : 'ok';
-      const buyStr = buyBy.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-      if (urgency === 'urgent') urgentNames.push({ name: ev.name.replace(/[''']/g,"'"), buyStr });
-      container.innerHTML += `
-        <div class="gift-item ${urgency === 'urgent' ? 'urgent-gift' : ''}">
-          <div style="font-size:1.3rem">🎁</div>
-          <div class="gift-info">
-            <div class="gift-name">${ev.name}</div>
-            <div class="gift-dates">${ev.detail} · <span class="gift-due ${urgency}">${urgency === 'urgent' ? '⚠️ ' : ''}Buy by ${buyStr}</span></div>
-          </div>
-          <div class="gift-days"><div class="num ${urgency === 'urgent' ? 'urgent' : ''}">${buyDays}</div><div class="lbl">days left</div></div>
-        </div>`;
-    });
+const ASANA_PROJECTS = [
+  { id: '1198904311483261', label: 'General To Do',   type: 'todo'    },
+  { id: '1207543774582065', label: 'Daily Tasks',      type: 'daily'   },
+  { id: '1209642498761949', label: 'Side Projects',    type: 'project' },
+  { id: '1211411129974472', label: 'Daily Work Tasks', type: 'work'    },
+];
 
-    // Urgent banner at top
-    const ub = document.getElementById('urgent-container');
-    ub.innerHTML = '';
-    urgentNames.forEach(({ name, buyStr }) => {
-      ub.innerHTML += `<div class="urgent-banner">🚨 ${name} — buy the gift by ${buyStr}!</div>`;
-    });
-  }
+const EVENTS = [
+  { name: "Sadie's 5th Birthday Party!", date:'2026-04-26', detail:'Apr 26 · Philadelphia Ethical Society', emoji:'🎂', gift:true },
+  { name: "Dad's Birthday",              date:'2026-05-02', detail:'May 2',                                  emoji:'🎂', gift:true },
+  { name: "Mason's Birthday – Treehouse",date:'2026-05-03', detail:'May 3 · 1:30 PM',                       emoji:'🌳', gift:true },
+  { name: "Oliver's 3rd Birthday",       date:'2026-05-03', detail:'May 3 · Imagination Street, Exton',     emoji:'🎈', gift:true },
+  { name: "Ryan's Birthday Dinner",      date:'2026-05-16', detail:'May 16',                                 emoji:'🎂', gift:true },
+];
 
-  // ─────────────────────────────────────────
-  //  FREE TIME TRACKER
-  // ─────────────────────────────────────────
-  const busyBlocks = [
-    [9*60,      9*60+30],
-    [11*60,     11*60+30],
-    [11*60+30,  12*60],
-    [12*60,     13*60],
-  ];
-  const DAY_START = 7*60, DAY_END = 22*60;
+// ════════════════════════════════════════════
+//  DATE / GREETING
+// ════════════════════════════════════════════
+function initDate() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('date-day').textContent = now.getDate();
+  document.getElementById('date-month-year').textContent = months[now.getMonth()] + ' ' + now.getFullYear() + ' · ' + days[now.getDay()];
+  const h = now.getHours();
+  document.getElementById('greeting').textContent = (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening') + ', Helana ✨';
+}
 
-  function fmtTime(mins) {
-    const h = Math.floor(mins/60), m = mins%60;
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const hh = h > 12 ? h-12 : (h===0 ? 12 : h);
-    return `${hh}:${m.toString().padStart(2,'0')} ${ampm}`;
-  }
+// ════════════════════════════════════════════
+//  SETTINGS MODAL
+// ════════════════════════════════════════════
+function openSettings() {
+  // Pre-fill saved values
+  document.getElementById('pat-input').value = localStorage.getItem(ASANA_PAT_KEY) || '';
+  document.getElementById('gcal-client-id-input').value = localStorage.getItem(GCAL_CLIENT_ID_KEY) || '';
+  document.getElementById('asana-connected-chip').classList.toggle('hidden', !localStorage.getItem(ASANA_PAT_KEY));
+  document.getElementById('gcal-connected-chip').classList.toggle('hidden', !localStorage.getItem(GCAL_TOKEN_KEY));
+  document.getElementById('gcal-connect-btn').style.display = localStorage.getItem(GCAL_CLIENT_ID_KEY) ? 'block' : 'none';
+  document.getElementById('settings-modal').classList.remove('hidden');
+}
+function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
+function switchTab(tab) {
+  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='asana')||(i===1&&tab==='gcal')));
+  document.getElementById('tab-asana').classList.toggle('active', tab==='asana');
+  document.getElementById('tab-gcal').classList.toggle('active', tab==='gcal');
+}
 
-  function buildFreeSlots() {
-    const sorted = [...busyBlocks].sort((a,b)=>a[0]-b[0]);
-    const slots = []; let cursor = DAY_START;
-    for (const [s,e] of sorted) {
-      if (s > cursor) slots.push([cursor, Math.min(s,DAY_END)]);
-      cursor = Math.max(cursor,e);
-    }
-    if (cursor < DAY_END) slots.push([cursor,DAY_END]);
-    return slots.filter(([s,e])=>e-s>=15);
-  }
+// ════════════════════════════════════════════
+//  ASANA INTEGRATION
+// ════════════════════════════════════════════
+function saveAsanaToken() {
+  const val = document.getElementById('pat-input').value.trim();
+  if (!val) { alert('Please paste your Asana token.'); return; }
+  localStorage.setItem(ASANA_PAT_KEY, val);
+  document.getElementById('asana-connected-chip').classList.remove('hidden');
+  closeSettings();
+  fetchAsana();
+}
+function clearAsanaToken() {
+  localStorage.removeItem(ASANA_PAT_KEY);
+  document.getElementById('asana-connected-chip').classList.add('hidden');
+  setStatus('tasks-status', 'pending', 'Not connected');
+}
 
-  function renderFreeTime() {
-    const now = new Date();
-    const nowMins = now.getHours()*60 + now.getMinutes();
-    const container = document.getElementById('free-time-list');
-    container.innerHTML = '';
-    buildFreeSlots().forEach(([start,end]) => {
-      const dur = end-start;
-      const hrs = Math.floor(dur/60), mins = dur%60;
-      const durStr = hrs > 0 ? (mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`) : `${mins}m`;
-      const isPast = nowMins >= end, isCurrent = nowMins >= start && nowMins < end;
-      const div = document.createElement('div');
-      div.className = 'free-slot' + (isPast?' past':isCurrent?' current':'');
-      div.innerHTML = `
-        <div class="slot-icon">${isPast?'✓':isCurrent?'⏱️':'🟢'}</div>
-        <div class="slot-info">
-          <div class="slot-label">${fmtTime(start)} – ${fmtTime(end)}</div>
-          <div class="slot-duration">${durStr} free</div>
-        </div>
-        <span class="slot-badge ${isPast?'badge-past':isCurrent?'badge-now':'badge-upcoming'}">${isPast?'passed':isCurrent?'now':'upcoming'}</span>`;
-      container.appendChild(div);
-    });
-  }
-
-  // ─────────────────────────────────────────
-  //  TOKEN MANAGEMENT
-  // ─────────────────────────────────────────
-  function getToken() { return localStorage.getItem(PAT_KEY) || ''; }
-
-  function saveToken() {
-    const val = document.getElementById('pat-input').value.trim();
-    if (!val) { alert('Please paste your Asana token.'); return; }
-    localStorage.setItem(PAT_KEY, val);
-    document.getElementById('token-modal').classList.add('hidden');
-    refreshAsana();
-  }
-
-  function skipToken() {
-    document.getElementById('token-modal').classList.add('hidden');
-    setTasksError('No Asana token — click ⚙️ to connect');
-  }
-
-  function showTokenModal() {
-    document.getElementById('pat-input').value = getToken();
-    document.getElementById('token-modal').classList.remove('hidden');
-  }
-
-  // ─────────────────────────────────────────
-  //  ASANA API
-  // ─────────────────────────────────────────
-  async function fetchProject(pat, projectId) {
-    const url = `https://app.asana.com/api/1.0/tasks?project=${projectId}&opt_fields=name,completed,due_on,permalink_url&limit=100`;
-    const res = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${pat}`, 'Accept': 'application/json' }
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    return json.data.filter(t => !t.completed && t.name && t.name.trim());
-  }
-
-  async function refreshAsana() {
-    const pat = getToken();
-    if (!pat) { showTokenModal(); return; }
-
-    const btn = document.getElementById('refresh-btn');
-    btn.classList.add('spinning');
-    setTasksStatus('loading');
-
-    try {
-      const results = await Promise.all(
-        ASANA_PROJECTS.map(p => fetchProject(pat, p.id).then(tasks => ({ ...p, tasks })))
-      );
-      renderTasks(results);
-      const now = new Date();
-      document.getElementById('last-updated').textContent =
-        'Last updated ' + now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) +
-        ' at ' + now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-      setTasksStatus('live');
-    } catch (err) {
-      console.error('Asana fetch error:', err);
-      if (err.message.includes('401') || err.message.includes('403')) {
-        setTasksError('Token invalid — click ⚙️ to update');
-        showTokenModal();
-      } else {
-        setTasksError('Could not reach Asana — check connection');
-      }
-    } finally {
-      btn.classList.remove('spinning');
-    }
-  }
-
-  function setTasksStatus(state) {
-    const el = document.getElementById('tasks-status');
-    if (state === 'live') {
-      el.innerHTML = '<span class="dot-live"></span> Live from Asana';
-    } else if (state === 'loading') {
-      el.innerHTML = '<span style="color:#9e7b6b">Fetching from Asana…</span>';
-    }
-  }
-
-  function setTasksError(msg) {
-    const el = document.getElementById('tasks-status');
-    el.innerHTML = `<span class="dot-error"></span> <span style="color:#c07050">${msg}</span>`;
-  }
-
-  // ─────────────────────────────────────────
-  //  RENDER TASKS
-  // ─────────────────────────────────────────
-  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
-  function taskHtml(task, cssClass, checkClass) {
-    const id = 'task-' + task.gid;
-    const isDone = !!saved[task.gid];
-    const today = new Date().toISOString().slice(0,10);
-    const isOverdue = task.due_on && task.due_on < today;
-    const overdueMeta = isOverdue
-      ? `<div class="task-meta">Due ${new Date(task.due_on+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>` : '';
-    return `
-      <div class="task-item ${cssClass}${isDone?' done':''}" data-gid="${task.gid}" onclick="toggleTask(this)">
-        <div class="task-check ${checkClass}"></div>
-        <div class="task-text">
-          <div class="task-name">${task.name}</div>${overdueMeta}
-        </div>
-      </div>`;
-  }
-
-  function renderTasks(projects) {
-    // Sort each project's tasks: overdue first, then by name
-    const today = new Date().toISOString().slice(0,10);
-    const byType = {};
-    projects.forEach(p => {
-      const overdue = p.tasks.filter(t => t.due_on && t.due_on < today);
-      const normal  = p.tasks.filter(t => !t.due_on || t.due_on >= today);
-      byType[p.type] = { overdue, normal, label: p.label };
-    });
-
-    // Build two columns
-    let leftHtml = '', rightHtml = '';
-
-    // LEFT: overdue tasks (across all projects) + daily
-    const allOverdue = projects.flatMap(p =>
-      p.tasks.filter(t => t.due_on && t.due_on < today)
-    );
-    if (allOverdue.length) {
-      leftHtml += `<div class="tasks-section">
-        <div class="tasks-section-label label-overdue">Overdue</div>
-        ${allOverdue.map(t => taskHtml(t,'overdue-task','')).join('')}
-      </div>`;
-    }
-
-    // Daily tasks
-    const daily = byType.daily?.normal || [];
-    const dailyTop = daily.filter(t => ['Cardio - 30 Minutes','Core - 25 minutes '].some(n => t.name.startsWith(n.trim())));
-    if (dailyTop.length) {
-      leftHtml += `<div class="tasks-section">
-        <div class="tasks-section-label label-daily">Daily</div>
-        ${dailyTop.map(t => taskHtml(t,'daily-task','')).join('')}
-      </div>`;
-    }
-
-    // RIGHT: To Do + Work + Side Projects
-    const todo = byType.todo?.normal?.slice(0,6) || [];
-    if (todo.length) {
-      rightHtml += `<div class="tasks-section">
-        <div class="tasks-section-label label-todo">To Do</div>
-        ${todo.map(t => taskHtml(t,'todo-task','')).join('')}
-      </div>`;
-    }
-
-    const work = byType.work?.normal || [];
-    if (work.length) {
-      rightHtml += `<div class="tasks-section">
-        <div class="tasks-section-label label-work">Work</div>
-        ${work.map(t => taskHtml(t,'work-task','')).join('')}
-      </div>`;
-    }
-
-    const proj = byType.project?.normal?.slice(0,3) || [];
-    if (proj.length) {
-      rightHtml += `<div class="tasks-section">
-        <div class="tasks-section-label label-projects">Side Projects</div>
-        ${proj.map(t => taskHtml(t,'project-task','')).join('')}
-      </div>`;
-    }
-
-    document.getElementById('tasks-cols').innerHTML =
-      `<div>${leftHtml || '<p style="color:#b39589;font-size:0.8rem">No overdue tasks 🎉</p>'}</div><div>${rightHtml}</div>`;
-
-    updateProgress();
-  }
-
-  // ─────────────────────────────────────────
-  //  TASK CHECKBOX TOGGLE
-  // ─────────────────────────────────────────
-  function toggleTask(el) {
-    const gid = el.dataset.gid;
-    el.classList.toggle('done');
-    saved[gid] = el.classList.contains('done');
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-    updateProgress();
-  }
-
-  function updateProgress() {
-    const all  = document.querySelectorAll('#tasks-cols .task-item[data-gid]');
-    const done = document.querySelectorAll('#tasks-cols .task-item.done');
-    const pct  = all.length > 0 ? Math.round((done.length/all.length)*100) : 0;
-    document.getElementById('progress-bar').style.width = pct + '%';
-    document.getElementById('progress-count').textContent = done.length + ' / ' + all.length + ' done';
-  }
-
-  // ─────────────────────────────────────────
-  //  INIT
-  // ─────────────────────────────────────────
-  initDate();
-  renderCountdowns();
-  renderGifts();
-  renderFreeTime();
-  setInterval(renderFreeTime, 60000);
-
-  // Load Asana on startup
-  window.addEventListener('DOMContentLoaded', () => {
-    if (!getToken()) {
-      showTokenModal();
+async function fetchAsana() {
+  const pat = localStorage.getItem(ASANA_PAT_KEY);
+  if (!pat) { setStatus('tasks-status','pending','Not connected'); return; }
+  setStatus('tasks-status','loading','Fetching…');
+  try {
+    const results = await Promise.all(ASANA_PROJECTS.map(async p => {
+      const r = await fetch(`https://app.asana.com/api/1.0/tasks?project=${p.id}&opt_fields=name,completed,due_on&limit=100`, {
+        headers: { Authorization: `Bearer ${pat}`, Accept: 'application/json' }
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      return { ...p, tasks: j.data.filter(t => !t.completed && t.name?.trim()) };
+    }));
+    renderTasks(results);
+    setStatus('tasks-status','live','Live from Asana');
+  } catch(e) {
+    console.error(e);
+    if (String(e).includes('401')||String(e).includes('403')) {
+      setStatus('tasks-status','error','Token invalid — update in ⚙️');
     } else {
-      refreshAsana();
+      setStatus('tasks-status','error','Could not reach Asana');
+    }
+  }
+}
+
+// ════════════════════════════════════════════
+//  GOOGLE CALENDAR INTEGRATION
+// ════════════════════════════════════════════
+let gcalTokenClient = null;
+let gcalAccessToken = null;
+
+function saveGcalClientId() {
+  const val = document.getElementById('gcal-client-id-input').value.trim();
+  if (!val) { alert('Please paste your Google Client ID.'); return; }
+  localStorage.setItem(GCAL_CLIENT_ID_KEY, val);
+  document.getElementById('gcal-connect-btn').style.display = 'block';
+  alert('Client ID saved! Now click "Connect Google Calendar" to sign in.');
+}
+function clearGcalToken() {
+  localStorage.removeItem(GCAL_TOKEN_KEY);
+  gcalAccessToken = null;
+  document.getElementById('gcal-connected-chip').classList.add('hidden');
+  setStatus('cal-status','pending','Not connected');
+  showCalConnectPrompt();
+}
+
+function initGoogleAuth() {
+  const clientId = localStorage.getItem(GCAL_CLIENT_ID_KEY);
+  if (!clientId || typeof google === 'undefined') return;
+  gcalTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: GCAL_SCOPE,
+    callback: (resp) => {
+      if (resp.error) { setStatus('cal-status','error','Auth failed'); return; }
+      gcalAccessToken = resp.access_token;
+      // Save token + expiry (1 hour)
+      localStorage.setItem(GCAL_TOKEN_KEY, JSON.stringify({
+        token: resp.access_token,
+        expires: Date.now() + (resp.expires_in * 1000)
+      }));
+      document.getElementById('gcal-connected-chip').classList.remove('hidden');
+      closeSettings();
+      fetchCalendar();
     }
   });
+}
 
-  // Allow Enter key in token input
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && document.activeElement.id === 'pat-input') saveToken();
+function connectGoogleCalendar() {
+  initGoogleAuth();
+  if (!gcalTokenClient) {
+    alert('Make sure you saved your Client ID first, and the Google script has loaded.');
+    return;
+  }
+  gcalTokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+function getStoredGcalToken() {
+  const raw = localStorage.getItem(GCAL_TOKEN_KEY);
+  if (!raw) return null;
+  const { token, expires } = JSON.parse(raw);
+  if (Date.now() > expires - 60000) return null; // expired or < 1min left
+  return token;
+}
+
+async function fetchCalendar() {
+  // Try stored token first, otherwise request new one silently
+  let token = getStoredGcalToken() || gcalAccessToken;
+  if (!token) {
+    const clientId = localStorage.getItem(GCAL_CLIENT_ID_KEY);
+    if (!clientId) { showCalConnectPrompt(); return; }
+    // Try silent token refresh
+    initGoogleAuth();
+    if (gcalTokenClient) {
+      gcalTokenClient.requestAccessToken({ prompt: '' });
+      return; // callback will call fetchCalendar again
+    }
+    showCalConnectPrompt();
+    return;
+  }
+
+  setStatus('cal-status','loading','Fetching…');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
+  const params = new URLSearchParams({
+    timeMin: today.toISOString(),
+    timeMax: tomorrow.toISOString(),
+    singleEvents: 'true',
+    orderBy: 'startTime',
+    maxResults: '50'
   });
-  </script>
+
+  try {
+    const allEvents = (await Promise.all(
+      CALENDAR_IDS.map(async cal => {
+        const r = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?${params}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (r.status === 401) throw new Error('401');
+        if (!r.ok) return [];
+        const j = await r.json();
+        return (j.items||[]).map(e => ({ ...e, _cal: cal }));
+      })
+    )).flat();
+
+    renderSchedule(allEvents);
+    setStatus('cal-status','live','Live from Google Calendar');
+    updateFreeTimeFromEvents(allEvents);
+  } catch(e) {
+    if (String(e).includes('401')) {
+      // Token expired — request new one silently
+      localStorage.removeItem(GCAL_TOKEN_KEY);
+      gcalAccessToken = null;
+      initGoogleAuth();
+      if (gcalTokenClient) gcalTokenClient.requestAccessToken({ prompt: '' });
+    } else {
+      setStatus('cal-status','error','Could not load calendar');
+    }
+  }
+}
+
+function renderSchedule(events) {
+  const allDay   = events.filter(e => e.start?.date && !e.start?.dateTime);
+  const timed    = events.filter(e => e.start?.dateTime);
+  timed.sort((a,b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
+
+  const body = document.getElementById('schedule-body');
+  document.getElementById('cal-connect-prompt')?.remove();
+
+  // All-day pills
+  const alldayRow = document.getElementById('allday-row');
+  if (allDay.length) {
+    alldayRow.style.display = '';
+    alldayRow.innerHTML = allDay.map(e => {
+      const cls = e._cal.calClass === 'cal-work' ? 'allday-work' : e._cal.calClass === 'cal-family' ? 'allday-family' : 'allday-personal';
+      return `<div class="allday-pill ${cls}">${e.summary || '(no title)'}</div>`;
+    }).join('');
+  }
+
+  // Timed events
+  if (!timed.length) {
+    body.innerHTML = `<div class="sched-empty">No events scheduled today 🎉</div>`;
+    return;
+  }
+
+  body.innerHTML = `<div class="schedule-list">${timed.map((e,i) => {
+    const start = new Date(e.start.dateTime);
+    const end   = new Date(e.end.dateTime);
+    const fmt = d => d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    const isLast = i === timed.length-1;
+    const loc = e.location ? `<div class="event-sub">📍 ${e.location}</div>` : '';
+    return `
+      <div class="schedule-item ${e._cal.calClass}">
+        <div class="time-col"><div class="time-start">${fmt(start)}</div><div class="time-end">${fmt(end)}</div></div>
+        <div class="line-col"><div class="dot"></div>${!isLast?'<div class="line"></div>':''}</div>
+        <div class="event-col">
+          <div class="event-name">${e.summary || '(no title)'}</div>${loc}
+          <span class="event-tag ${e._cal.tagClass}">${e._cal.label}</span>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function showCalConnectPrompt() {
+  const body = document.getElementById('schedule-body');
+  if (!document.getElementById('cal-connect-prompt')) {
+    body.innerHTML = `<div class="sched-connect" id="cal-connect-prompt">
+      <p style="font-size:0.82rem;color:#9e7b6b;margin-bottom:0">Connect Google Calendar to see today's events here.</p>
+      <button class="btn-gcal-connect" onclick="openSettings();switchTab('gcal')">📅 Connect Google Calendar</button>
+    </div>`;
+  }
+}
+
+// ════════════════════════════════════════════
+//  FREE TIME TRACKER
+// ════════════════════════════════════════════
+let busyBlocks = []; // populated from calendar or defaults
+
+const DEFAULT_BUSY = [
+  [9*60, 9*60+30],
+  [11*60, 11*60+30],
+  [11*60+30, 12*60],
+  [12*60, 13*60],
+];
+const DAY_START = 7*60, DAY_END = 22*60;
+
+function updateFreeTimeFromEvents(events) {
+  const timed = events.filter(e => e.start?.dateTime);
+  if (!timed.length) { busyBlocks = DEFAULT_BUSY; renderFreeTime(); return; }
+  busyBlocks = timed.map(e => {
+    const s = new Date(e.start.dateTime), en = new Date(e.end.dateTime);
+    return [s.getHours()*60+s.getMinutes(), en.getHours()*60+en.getMinutes()];
+  });
+  renderFreeTime();
+}
+
+function fmtTime(mins) {
+  const h=Math.floor(mins/60), m=mins%60, ampm=h>=12?'PM':'AM';
+  const hh=h>12?h-12:(h===0?12:h);
+  return `${hh}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function buildFreeSlots() {
+  const blocks = busyBlocks.length ? busyBlocks : DEFAULT_BUSY;
+  const sorted = [...blocks].sort((a,b)=>a[0]-b[0]);
+  const slots=[]; let cursor=DAY_START;
+  for(const[s,e]of sorted){if(s>cursor)slots.push([cursor,Math.min(s,DAY_END)]);cursor=Math.max(cursor,e);}
+  if(cursor<DAY_END)slots.push([cursor,DAY_END]);
+  return slots.filter(([s,e])=>e-s>=15);
+}
+
+function renderFreeTime() {
+  const now=new Date(), nm=now.getHours()*60+now.getMinutes();
+  const c=document.getElementById('free-time-list'); c.innerHTML='';
+  buildFreeSlots().forEach(([start,end])=>{
+    const dur=end-start, hrs=Math.floor(dur/60), mins=dur%60;
+    const durStr=hrs>0?(mins>0?`${hrs}h ${mins}m`:`${hrs}h`):`${mins}m`;
+    const isPast=nm>=end, isCurrent=nm>=start&&nm<end;
+    const d=document.createElement('div');
+    d.className='free-slot'+(isPast?' past':isCurrent?' current':'');
+    d.innerHTML=`<div class="slot-icon">${isPast?'✓':isCurrent?'⏱️':'🟢'}</div>
+      <div class="slot-info"><div class="slot-label">${fmtTime(start)} – ${fmtTime(end)}</div>
+      <div class="slot-duration">${durStr} free</div></div>
+      <span class="slot-badge ${isPast?'badge-past':isCurrent?'badge-now':'badge-upcoming'}">${isPast?'passed':isCurrent?'now':'upcoming'}</span>`;
+    c.appendChild(d);
+  });
+}
+
+// ════════════════════════════════════════════
+//  COUNTDOWNS + GIFTS
+// ════════════════════════════════════════════
+function dateDiff(ds){const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(ds+'T00:00:00')-t)/86400000);}
+
+function renderCountdowns() {
+  document.getElementById('countdown-list').innerHTML = EVENTS.filter(e=>dateDiff(e.date)>=0).map(e=>{
+    const d=dateDiff(e.date), hot=d<=7;
+    return `<div class="countdown-item ${hot?'hot':''}">
+      <div style="font-size:1.2rem">${e.emoji}</div>
+      <div class="countdown-info"><div class="countdown-name">${e.name}</div><div class="countdown-date">${e.detail}</div></div>
+      <div class="countdown-days"><div class="days-number ${hot?'urgent':''}">${d}</div><div class="days-label">days</div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderGifts() {
+  const ub=document.getElementById('urgent-container'); ub.innerHTML='';
+  document.getElementById('gift-list').innerHTML = EVENTS.filter(e=>e.gift&&dateDiff(e.date)>=0).map(e=>{
+    const buyBy=new Date(e.date+'T00:00:00'); buyBy.setDate(buyBy.getDate()-3);
+    const buyDays=Math.round((buyBy-new Date().setHours(0,0,0,0))/86400000);
+    const urgency=buyDays<=3?'urgent':buyDays<=7?'soon':'ok';
+    const buyStr=buyBy.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    if(urgency==='urgent') ub.innerHTML+=`<div class="urgent-banner">🚨 ${e.name} — buy the gift by ${buyStr}!</div>`;
+    return `<div class="gift-item ${urgency==='urgent'?'urgent-gift':''}">
+      <div style="font-size:1.3rem">🎁</div>
+      <div class="gift-info"><div class="gift-name">${e.name}</div>
+      <div class="gift-dates">${e.detail} · <span class="gift-due ${urgency}">${urgency==='urgent'?'⚠️ ':''}Buy by ${buyStr}</span></div></div>
+      <div class="gift-days"><div class="num ${urgency==='urgent'?'urgent':''}">${buyDays}</div><div class="lbl">days left</div></div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+//  TASKS
+// ════════════════════════════════════════════
+const savedChecks = JSON.parse(localStorage.getItem(TASK_CHECK_KEY)||'{}');
+
+function renderTasks(projects) {
+  const today=new Date().toISOString().slice(0,10);
+  const allOverdue=projects.flatMap(p=>p.tasks.filter(t=>t.due_on&&t.due_on<today));
+  const byType={}; projects.forEach(p=>{byType[p.type]={normal:p.tasks.filter(t=>!t.due_on||t.due_on>=today),label:p.label};});
+
+  let left='', right='';
+  if(allOverdue.length) left+=section('Overdue','label-overdue',allOverdue,'overdue-task');
+  const daily=byType.daily?.normal||[];
+  const dailyCore=daily.filter(t=>['Cardio','Core'].some(k=>t.name.startsWith(k)));
+  if(dailyCore.length) left+=section('Daily','label-daily',dailyCore,'daily-task');
+
+  const todo=(byType.todo?.normal||[]).slice(0,6);
+  if(todo.length) right+=section('To Do','label-todo',todo,'todo-task');
+  const work=byType.work?.normal||[];
+  if(work.length) right+=section('Work','label-work',work,'work-task');
+  const proj=(byType.project?.normal||[]).slice(0,3);
+  if(proj.length) right+=section('Side Projects','label-projects',proj,'project-task');
+
+  document.getElementById('tasks-cols').innerHTML=
+    `<div>${left||'<p style="color:#b39589;font-size:0.8rem;padding:8px">No overdue tasks 🎉</p>'}</div><div>${right}</div>`;
+  updateProgress();
+}
+
+function section(label,cls,tasks,itemCls) {
+  return `<div class="tasks-section">
+    <div class="tasks-section-label ${cls}">${label}</div>
+    ${tasks.map(t=>{
+      const isDone=!!savedChecks[t.gid];
+      const overdueMeta=t.due_on&&t.due_on<new Date().toISOString().slice(0,10)
+        ?`<div class="task-meta">Due ${new Date(t.due_on+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>`:'';
+      return `<div class="task-item ${itemCls}${isDone?' done':''}" data-gid="${t.gid}" onclick="toggleTask(this)">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="task-name">${t.name}</div>${overdueMeta}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function toggleTask(el) {
+  const gid=el.dataset.gid;
+  el.classList.toggle('done');
+  savedChecks[gid]=el.classList.contains('done');
+  localStorage.setItem(TASK_CHECK_KEY,JSON.stringify(savedChecks));
+  updateProgress();
+}
+
+function updateProgress() {
+  const all=document.querySelectorAll('#tasks-cols .task-item[data-gid]');
+  const done=document.querySelectorAll('#tasks-cols .task-item.done');
+  document.getElementById('progress-bar').style.width=(all.length?Math.round(done.length/all.length*100):0)+'%';
+  document.getElementById('progress-count').textContent=done.length+' / '+all.length+' done';
+}
+
+// ════════════════════════════════════════════
+//  STATUS HELPER
+// ════════════════════════════════════════════
+function setStatus(id, state, label) {
+  const dotClass = state==='live'?'dot-live':state==='error'?'dot-error':state==='loading'?'dot-pending':'dot-pending';
+  const color = state==='live'?'#42d692':state==='error'?'#e08050':state==='loading'?'#c0c0c0':'#aaa';
+  document.getElementById(id).innerHTML=`<span class="${dotClass}"></span><span style="color:${color};font-size:0.7rem">${label}</span>`;
+}
+
+// ════════════════════════════════════════════
+//  REFRESH ALL
+// ════════════════════════════════════════════
+function refreshAll() {
+  const btn=document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+  Promise.allSettled([fetchAsana(), fetchCalendar()]).then(()=>{
+    btn.classList.remove('spinning');
+    document.getElementById('last-updated').textContent='Last updated '+
+      new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  });
+}
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+initDate();
+renderCountdowns();
+renderGifts();
+renderFreeTime();
+setInterval(renderFreeTime, 60000);
+
+// Wait for Google script to load, then init auth
+function waitForGoogle(cb, tries=0) {
+  if(typeof google!=='undefined'&&google.accounts) cb();
+  else if(tries<20) setTimeout(()=>waitForGoogle(cb,tries+1),300);
+}
+
+window.addEventListener('load', () => {
+  // Asana
+  if(localStorage.getItem(ASANA_PAT_KEY)) fetchAsana();
+  else setStatus('tasks-status','pending','Click ⚙️ to connect Asana');
+
+  // Google Calendar
+  const storedToken = getStoredGcalToken();
+  const clientId = localStorage.getItem(GCAL_CLIENT_ID_KEY);
+  if(storedToken) {
+    gcalAccessToken = storedToken;
+    fetchCalendar();
+  } else if(clientId) {
+    waitForGoogle(()=>{
+      initGoogleAuth();
+      gcalTokenClient.requestAccessToken({ prompt:'' }); // silent refresh
+    });
+  } else {
+    setStatus('cal-status','pending','Click ⚙️ to connect');
+  }
+});
+</script>
 </body>
 </html>
