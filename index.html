@@ -25,6 +25,9 @@
     /* NOTICE BANNER */
     .notice-banner { background: #fff8e8; border: 1px solid #f0d890; border-radius: 10px; padding: 8px 14px; font-size: 0.75rem; color: #8a6a20; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 
+    /* URGENT BANNER */
+    .urgent-banner { background: #fef0f0; border: 1px solid #f0b0b0; border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; color: #a03030; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
+
     /* ALL DAY BANNERS */
     .allday-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
     .allday-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; }
@@ -66,16 +69,19 @@
     /* COUNTDOWNS */
     .countdown-list { display: flex; flex-direction: column; gap: 10px; }
     .countdown-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #fdf6f0; }
+    .countdown-item.hot { background: #fef0ee; }
     .countdown-info { flex: 1; }
     .countdown-name { font-size: 0.83rem; font-weight: 600; color: #3a2e2a; }
     .countdown-date { font-size: 0.7rem; color: #9e7b6b; margin-top: 2px; }
     .countdown-days { text-align: center; min-width: 50px; }
     .days-number { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 600; color: #c0694a; line-height: 1; }
+    .days-number.urgent { color: #b03030; }
     .days-label { font-size: 0.6rem; color: #9e7b6b; text-transform: uppercase; letter-spacing: 0.07em; }
 
     /* GIFT REMINDERS */
     .gift-list { display: flex; flex-direction: column; gap: 10px; }
     .gift-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: #fdf6f0; }
+    .gift-item.urgent-gift { background: #fef0ee; border-left: 3px solid #d05050; }
     .gift-info { flex: 1; }
     .gift-name { font-size: 0.83rem; font-weight: 600; color: #3a2e2a; }
     .gift-dates { font-size: 0.7rem; color: #9e7b6b; margin-top: 2px; }
@@ -85,6 +91,7 @@
     .gift-due.ok { color: #2d7a52; }
     .gift-days { text-align: center; min-width: 44px; }
     .gift-days .num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 600; color: #c0694a; line-height: 1; }
+    .gift-days .num.urgent { color: #b03030; }
     .gift-days .lbl { font-size: 0.58rem; color: #9e7b6b; text-transform: uppercase; letter-spacing: 0.07em; }
 
     /* TASKS */
@@ -101,11 +108,13 @@
     .label-overdue { background: #fce8e8; color: #b03434; }
     .label-todo { background: #f0edf8; color: #6644aa; }
     .label-backlog { background: #f0f0f5; color: #666; }
+    .label-work { background: #dff0e8; color: #2d7a52; }
 
     .task-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 10px; margin-bottom: 6px; cursor: pointer; transition: opacity 0.2s ease; user-select: none; }
     .task-item:hover { opacity: 0.85; }
     .task-item.overdue-task { background: #fdf0f0; }
     .task-item.todo-task { background: #f5f2fb; }
+    .task-item.work-task { background: #f0faf5; }
     .task-item.backlog-task { background: #f7f7fb; }
     .task-item.done { opacity: 0.4; }
     .task-item.done .task-name { text-decoration: line-through; color: #a09088; }
@@ -114,6 +123,7 @@
     .task-check { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
     .overdue-task .task-check { border: 2px solid #e8a0a0; }
     .todo-task .task-check { border: 2px solid #b09add; }
+    .work-task .task-check { border: 2px solid #70c9a0; }
     .backlog-task .task-check { border: 2px solid #c0c0d0; }
     .task-name { font-size: 0.83rem; color: #3a2e2a; line-height: 1.4; font-weight: 500; }
     .task-meta { font-size: 0.68rem; margin-top: 2px; }
@@ -137,9 +147,14 @@
       <div class="subtitle">Here's what's on your plate today</div>
     </div>
     <div class="date-badge">
-      <div class="day">16</div>
-      <div class="month-year">April 2026</div>
+      <div class="day">20</div>
+      <div class="month-year">April 2026 · Monday</div>
     </div>
+  </div>
+
+  <!-- URGENT ALERT -->
+  <div class="urgent-banner">
+    🚨 Sadie's birthday is in 6 days — buy her gift by this Thursday, Apr 23!
   </div>
 
   <div class="grid">
@@ -148,7 +163,7 @@
     <div class="card col-full">
       <div class="card-title"><div class="icon" style="background:#fde8d8;">📅</div>Today's Schedule</div>
 
-      <div class="notice-banner">⚠️ Google Calendar is refreshing — showing your known recurring meetings. <a href="https://calendar.google.com" target="_blank" style="color:#8a6a20;font-weight:600;">Open Calendar</a> for anything additional today.</div>
+      <div class="notice-banner">⚠️ Google Calendar is temporarily unavailable — showing your known recurring meetings. <a href="https://calendar.google.com" target="_blank" style="color:#8a6a20;font-weight:600;">Open Calendar</a> to check for anything else today.</div>
 
       <div class="schedule-list">
         <div class="schedule-item cal-work">
@@ -184,30 +199,30 @@
     <div class="card">
       <div class="card-title"><div class="icon" style="background:#fce8f3;">🎉</div>Coming Up</div>
       <div class="countdown-list">
-        <div class="countdown-item">
+        <div class="countdown-item hot">
           <div style="font-size:1.2rem">🎂</div>
           <div class="countdown-info"><div class="countdown-name">Sadie's 5th Birthday Party!</div><div class="countdown-date">Apr 26 · Philadelphia Ethical Society</div></div>
-          <div class="countdown-days"><div class="days-number">10</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number urgent">6</div><div class="days-label">days</div></div>
         </div>
         <div class="countdown-item">
           <div style="font-size:1.2rem">🎂</div>
           <div class="countdown-info"><div class="countdown-name">Dad's Birthday</div><div class="countdown-date">May 2</div></div>
-          <div class="countdown-days"><div class="days-number">16</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">12</div><div class="days-label">days</div></div>
         </div>
         <div class="countdown-item">
           <div style="font-size:1.2rem">🌳</div>
           <div class="countdown-info"><div class="countdown-name">Mason's Birthday – Treehouse World</div><div class="countdown-date">May 3 · 1:30 PM</div></div>
-          <div class="countdown-days"><div class="days-number">17</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">13</div><div class="days-label">days</div></div>
         </div>
         <div class="countdown-item">
           <div style="font-size:1.2rem">🎈</div>
           <div class="countdown-info"><div class="countdown-name">Oliver's 3rd Birthday</div><div class="countdown-date">May 3 · Imagination Street, Exton</div></div>
-          <div class="countdown-days"><div class="days-number">17</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">13</div><div class="days-label">days</div></div>
         </div>
         <div class="countdown-item">
           <div style="font-size:1.2rem">🎂</div>
           <div class="countdown-info"><div class="countdown-name">Ryan's Birthday Dinner</div><div class="countdown-date">May 16</div></div>
-          <div class="countdown-days"><div class="days-number">30</div><div class="days-label">days</div></div>
+          <div class="countdown-days"><div class="days-number">26</div><div class="days-label">days</div></div>
         </div>
       </div>
     </div>
@@ -216,29 +231,29 @@
     <div class="card">
       <div class="card-title"><div class="icon" style="background:#fce8f3;">🎁</div>Gift Reminders</div>
       <div class="gift-list">
-        <div class="gift-item">
+        <div class="gift-item urgent-gift">
           <div style="font-size:1.3rem">🎁</div>
           <div class="gift-info">
             <div class="gift-name">Sadie's 5th Birthday</div>
-            <div class="gift-dates">Party: Apr 26 · <span class="gift-due soon">Buy by Apr 23</span></div>
+            <div class="gift-dates">Party: Apr 26 · <span class="gift-due urgent">⚠️ Buy by Apr 23</span></div>
           </div>
-          <div class="gift-days"><div class="num">7</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num urgent">3</div><div class="lbl">days left</div></div>
         </div>
         <div class="gift-item">
           <div style="font-size:1.3rem">🎁</div>
           <div class="gift-info">
             <div class="gift-name">Dad's Birthday</div>
-            <div class="gift-dates">May 2 · <span class="gift-due ok">Buy by Apr 29</span></div>
+            <div class="gift-dates">May 2 · <span class="gift-due soon">Buy by Apr 29</span></div>
           </div>
-          <div class="gift-days"><div class="num">13</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">9</div><div class="lbl">days left</div></div>
         </div>
         <div class="gift-item">
           <div style="font-size:1.3rem">🎁</div>
           <div class="gift-info">
             <div class="gift-name">Oliver's 3rd Birthday</div>
-            <div class="gift-dates">Party: May 3 · <span class="gift-due ok">Buy by Apr 30</span></div>
+            <div class="gift-dates">Party: May 3 · <span class="gift-due soon">Buy by Apr 30</span></div>
           </div>
-          <div class="gift-days"><div class="num">14</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">10</div><div class="lbl">days left</div></div>
         </div>
         <div class="gift-item">
           <div style="font-size:1.3rem">🎁</div>
@@ -246,7 +261,7 @@
             <div class="gift-name">Mason's Birthday</div>
             <div class="gift-dates">May 4 · <span class="gift-due ok">Buy by May 1</span></div>
           </div>
-          <div class="gift-days"><div class="num">15</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">11</div><div class="lbl">days left</div></div>
         </div>
         <div class="gift-item">
           <div style="font-size:1.3rem">🎁</div>
@@ -254,7 +269,7 @@
             <div class="gift-name">Ryan's Birthday</div>
             <div class="gift-dates">May 19 · <span class="gift-due ok">Buy by May 16</span></div>
           </div>
-          <div class="gift-days"><div class="num">30</div><div class="lbl">days left</div></div>
+          <div class="gift-days"><div class="num">26</div><div class="lbl">days left</div></div>
         </div>
       </div>
     </div>
@@ -265,7 +280,7 @@
       <div class="progress-wrap">
         <div class="progress-header">
           <span class="progress-label">Today's progress</span>
-          <span class="progress-count" id="progress-count">0 / 11 done</span>
+          <span class="progress-count" id="progress-count">0 / 13 done</span>
         </div>
         <div class="progress-track"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
       </div>
@@ -287,15 +302,11 @@
             </div>
             <div class="task-item overdue-task" data-task="mason-ent">
               <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Mason ENT Appt</div><div class="task-meta overdue-meta">Past due</div></div>
+              <div class="task-text"><div class="task-name">Mason ENT Appointment</div><div class="task-meta overdue-meta">Past due</div></div>
             </div>
             <div class="task-item overdue-task" data-task="fidelity">
               <div class="task-check"></div>
               <div class="task-text"><div class="task-name">Fidelity Account</div><div class="task-meta overdue-meta">Past due</div></div>
-            </div>
-            <div class="task-item overdue-task" data-task="meet-hr">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Meet with HR</div><div class="task-meta overdue-meta">Past due</div></div>
             </div>
           </div>
           <div class="tasks-section">
@@ -329,9 +340,20 @@
               <div class="task-check"></div>
               <div class="task-text"><div class="task-name">Send Something Nice to John</div></div>
             </div>
-            <div class="task-item todo-task" data-task="obsidian">
+            <div class="task-item todo-task" data-task="reorder-contacts">
               <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Obsidian Subscription</div></div>
+              <div class="task-text"><div class="task-name">Reorder Contacts</div></div>
+            </div>
+          </div>
+          <div class="tasks-section">
+            <div class="tasks-section-label label-work">Work</div>
+            <div class="task-item work-task" data-task="r1clear">
+              <div class="task-check"></div>
+              <div class="task-text"><div class="task-name">Source Configuration R1Clear</div></div>
+            </div>
+            <div class="task-item work-task" data-task="tran-servers">
+              <div class="task-check"></div>
+              <div class="task-text"><div class="task-name">TRAN Servers</div></div>
             </div>
           </div>
           <div class="tasks-section">
@@ -339,14 +361,6 @@
             <div class="task-item backlog-task" data-task="coupon-app">
               <div class="task-check"></div>
               <div class="task-text"><div class="task-name">Coupon App with Stacking Rules</div></div>
-            </div>
-            <div class="task-item backlog-task" data-task="tiny-tummies">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Tiny Tummies</div></div>
-            </div>
-            <div class="task-item backlog-task" data-task="firebase">
-              <div class="task-check"></div>
-              <div class="task-text"><div class="task-name">Firebase</div></div>
             </div>
           </div>
         </div>
@@ -356,12 +370,12 @@
   </div>
 
   <div class="footer">
-    Last updated April 16, 2026 · <a href="https://calendar.google.com" target="_blank">Open Google Calendar</a> · <a href="https://app.asana.com" target="_blank">Open Asana</a>
+    Last updated April 20, 2026 · <a href="https://calendar.google.com" target="_blank">Open Google Calendar</a> · <a href="https://app.asana.com" target="_blank">Open Asana</a>
   </div>
 
   <script>
     // ── FREE TIME TRACKER ──
-    // Recurring busy blocks for today (Thu Apr 16)
+    // Recurring busy blocks for today (Mon Apr 20)
     const busyBlocks = [
       [9*60,      9*60+30],   // Emails 9:00–9:30
       [11*60,     11*60+30],  // EDW standup 11:00–11:30
@@ -415,7 +429,7 @@
     setInterval(renderFreeTime, 60000);
 
     // ── TASKS ──
-    const STORAGE_KEY = 'helana-dashboard-2026-04-16';
+    const STORAGE_KEY = 'helana-dashboard-2026-04-20';
     const tasks = document.querySelectorAll('.task-item[data-task]');
     const totalTasks = tasks.length;
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
